@@ -1,6 +1,7 @@
 .env
 __pycache__/
 *.pyc
+*.pem
 oauth_token.json
 node_modules/
 coverage/

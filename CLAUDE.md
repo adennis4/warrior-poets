@@ -106,3 +106,81 @@ Each player in a roster includes:
 - `injury_status` - Injury designation if any
 - `bye_week` - Player's bye week
 - `stats` - Season stats (keyed by Yahoo stat_id)
+
+## Kalshi Prediction Markets API
+
+### Overview
+
+Kalshi is a regulated prediction market where you can trade on the outcomes of real-world events. The API supports both public market data endpoints and authenticated trading endpoints.
+
+### Environment Variables
+
+```bash
+KALSHI_USE_DEMO=true|false    # Use demo (default) or production API
+KALSHI_API_KEY_ID=<key>       # API key ID for authenticated endpoints
+KALSHI_PRIVATE_KEY_PATH=<path> # Path to RSA private key file
+```
+
+### Sports Series Tickers
+
+| League | Series | Description |
+|--------|--------|-------------|
+| NFL    | KXSB   | Super Bowl / Pro Football Championship |
+| NBA    | KXNBA  | NBA Finals / Pro Basketball Finals |
+| NHL    | KXNHL  | Stanley Cup Finals |
+| MLB    | KXMLB  | World Series / Pro Baseball Championship |
+
+### CLI Commands
+
+```bash
+# Check exchange status
+python3 kalshi_api.py status
+
+# List open markets
+python3 kalshi_api.py markets [query]
+
+# Sports championship markets
+python3 kalshi_api.py sports [nfl|nba|nhl|mlb]
+python3 kalshi_api.py nfl     # Super Bowl markets
+python3 kalshi_api.py nba     # NBA Finals markets
+python3 kalshi_api.py nhl     # Stanley Cup markets
+python3 kalshi_api.py mlb     # World Series markets
+
+# Get orderbook for a market
+python3 kalshi_api.py orderbook <ticker>
+
+# Get account balance (requires auth)
+python3 kalshi_api.py balance
+```
+
+### Market Ticker Format
+
+Championship markets follow the pattern: `KXSB-26-KC`
+- `KXSB` = Series (Super Bowl)
+- `26` = Season/Year
+- `KC` = Team abbreviation
+
+### API Endpoints
+
+**Public (no auth required):**
+- `get_exchange_status()` - Exchange status
+- `get_markets()` - List markets with filters
+- `get_market(ticker)` - Single market details
+- `get_market_orderbook(ticker)` - Order book
+- `search_markets(query)` - Search by keyword
+
+**Authenticated (requires API key + private key):**
+- `get_balance()` - Account balance
+- `get_positions()` - Current positions
+- `get_orders()` - Active orders
+- `create_order()` - Place new order
+- `cancel_order()` - Cancel order
+
+### Authentication
+
+Kalshi uses RSA-PSS signatures for authentication:
+1. Create API key at kalshi.com (generates key ID + private key)
+2. Save private key to file
+3. Set `KALSHI_API_KEY_ID` and `KALSHI_PRIVATE_KEY_PATH` env vars
+
+Signature format: `timestamp + method + path` signed with RSA-PSS SHA256
