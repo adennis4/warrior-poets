@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+oauth_token.json
+node_modules/
+coverage/
+debug_*.py
+debug_*.json
+.claude/

@@ -1,0 +1,427 @@
+{
+  "teams": {
+    "fantasy_content": {
+      "xml:lang": "en-US",
+      "yahoo:uri": "/fantasy/v2/league/461.l.50810/teams",
+      "league": [
+        {
+          "league_key": "461.l.50810",
+          "league_id": "50810",
+          "name": "Warrior Poets",
+          "url": "https://football.fantasysports.yahoo.com/2026/f1/50810",
+          "num_teams": 14,
+          "scoring_type": "head",
+          "current_week": "1",
+          "start_week": "1",
+          "start_date": "2026-09-10",
+          "end_week": "17",
+          "end_date": "2026-12-28",
+          "is_finished": 0,
+          "game_code": "nfl",
+          "season": "2026"
+        },
+        {
+          "teams": {
+            "0": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.1"},
+                  {"team_id": "1"},
+                  {"name": "Obligatory Invite"},
+                  {"managers": [{"manager": {"manager_id": "1", "nickname": "Ryan"}}]}
+                ]
+              ]
+            },
+            "1": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.2"},
+                  {"team_id": "2"},
+                  {"name": "Beanie's Babies"},
+                  {"managers": [{"manager": {"manager_id": "2", "nickname": "Cliff"}}]}
+                ]
+              ]
+            },
+            "2": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.3"},
+                  {"team_id": "3"},
+                  {"name": "Berry Domesticated"},
+                  {"managers": [{"manager": {"manager_id": "3", "nickname": "Joe Rizzo"}}]}
+                ]
+              ]
+            },
+            "3": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.4"},
+                  {"team_id": "4"},
+                  {"name": "Destroying YOR"},
+                  {"managers": [{"manager": {"manager_id": "4", "nickname": "Josh"}}]}
+                ]
+              ]
+            },
+            "4": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.5"},
+                  {"team_id": "5"},
+                  {"name": "Dues is Lucy"},
+                  {"managers": [{"manager": {"manager_id": "5", "nickname": "Bradley"}}]}
+                ]
+              ]
+            },
+            "5": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.6"},
+                  {"team_id": "6"},
+                  {"name": "Reigning Champ"},
+                  {"managers": [{"manager": {"manager_id": "6", "nickname": "Jett Miller"}}]}
+                ]
+              ]
+            },
+            "6": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.7"},
+                  {"team_id": "7"},
+                  {"name": "Schmitz & Giggles"},
+                  {"managers": [{"manager": {"manager_id": "7", "nickname": "Rick"}}]}
+                ]
+              ]
+            },
+            "7": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.8"},
+                  {"team_id": "8"},
+                  {"name": "Hot Lloyd Summer"},
+                  {"managers": [{"manager": {"manager_id": "8", "nickname": "Jonathan"}}]}
+                ]
+              ]
+            },
+            "8": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.9"},
+                  {"team_id": "9"},
+                  {"name": "Hudson's Pack Is Back"},
+                  {"managers": [{"manager": {"manager_id": "9", "nickname": "Eric"}}]}
+                ]
+              ]
+            },
+            "9": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.10"},
+                  {"team_id": "10"},
+                  {"name": "K.Y.K"},
+                  {"managers": [{"manager": {"manager_id": "10", "nickname": "Justin Bagdzius"}}]}
+                ]
+              ]
+            },
+            "10": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.11"},
+                  {"team_id": "11"},
+                  {"name": "Let's Go Aiyuk!"},
+                  {"managers": [{"manager": {"manager_id": "11", "nickname": "Michael Y"}}]}
+                ]
+              ]
+            },
+            "11": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.12"},
+                  {"team_id": "12"},
+                  {"name": "No LAmbs"},
+                  {"managers": [{"manager": {"manager_id": "12", "nickname": "Ben"}}]}
+                ]
+              ]
+            },
+            "12": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.13"},
+                  {"team_id": "13"},
+                  {"name": "RICH&DOM"},
+                  {"managers": [{"manager": {"manager_id": "13", "nickname": "Richard"}}]}
+                ]
+              ]
+            },
+            "13": {
+              "team": [
+                [
+                  {"team_key": "461.l.50810.t.14"},
+                  {"team_id": "14"},
+                  {"name": "Glass House"},
+                  {"managers": [{"manager": {"manager_id": "14", "nickname": "Andrew"}}]}
+                ]
+              ]
+            },
+            "count": 14
+          }
+        }
+      ]
+    }
+  },
+  "scoreboard_week1": {
+    "fantasy_content": {
+      "xml:lang": "en-US",
+      "yahoo:uri": "/fantasy/v2/league/461.l.50810/scoreboard;week=1",
+      "league": [
+        {
+          "league_key": "461.l.50810",
+          "league_id": "50810",
+          "name": "Warrior Poets",
+          "current_week": "1",
+          "season": "2026"
+        },
+        {
+          "scoreboard": {
+            "week": "1",
+            "0": {
+              "matchups": {
+                "0": {
+                  "matchup": {
+                    "week": "1",
+                    "status": "postevent",
+                    "0": {
+                      "teams": {
+                        "0": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.1"},
+                              {"team_id": "1"},
+                              {"name": "Obligatory Invite"},
+                              {"managers": [{"manager": {"nickname": "Ryan"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "91.54"}}
+                          ]
+                        },
+                        "1": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.11"},
+                              {"team_id": "11"},
+                              {"name": "Let's Go Aiyuk!"},
+                              {"managers": [{"manager": {"nickname": "Michael Y"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "98.72"}}
+                          ]
+                        },
+                        "count": 2
+                      }
+                    }
+                  }
+                },
+                "1": {
+                  "matchup": {
+                    "week": "1",
+                    "status": "postevent",
+                    "0": {
+                      "teams": {
+                        "0": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.2"},
+                              {"team_id": "2"},
+                              {"name": "Beanie's Babies"},
+                              {"managers": [{"manager": {"nickname": "Cliff"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "142.36"}}
+                          ]
+                        },
+                        "1": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.12"},
+                              {"team_id": "12"},
+                              {"name": "No LAmbs"},
+                              {"managers": [{"manager": {"nickname": "Ben"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "145.92"}}
+                          ]
+                        },
+                        "count": 2
+                      }
+                    }
+                  }
+                },
+                "2": {
+                  "matchup": {
+                    "week": "1",
+                    "status": "postevent",
+                    "0": {
+                      "teams": {
+                        "0": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.3"},
+                              {"team_id": "3"},
+                              {"name": "Berry Domesticated"},
+                              {"managers": [{"manager": {"nickname": "Joe Rizzo"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "88.46"}}
+                          ]
+                        },
+                        "1": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.13"},
+                              {"team_id": "13"},
+                              {"name": "RICH&DOM"},
+                              {"managers": [{"manager": {"nickname": "Richard"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "128.18"}}
+                          ]
+                        },
+                        "count": 2
+                      }
+                    }
+                  }
+                },
+                "3": {
+                  "matchup": {
+                    "week": "1",
+                    "status": "postevent",
+                    "0": {
+                      "teams": {
+                        "0": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.4"},
+                              {"team_id": "4"},
+                              {"name": "Destroying YOR"},
+                              {"managers": [{"manager": {"nickname": "Josh"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "156.84"}}
+                          ]
+                        },
+                        "1": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.14"},
+                              {"team_id": "14"},
+                              {"name": "Glass House"},
+                              {"managers": [{"manager": {"nickname": "Andrew"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "118.76"}}
+                          ]
+                        },
+                        "count": 2
+                      }
+                    }
+                  }
+                },
+                "4": {
+                  "matchup": {
+                    "week": "1",
+                    "status": "postevent",
+                    "0": {
+                      "teams": {
+                        "0": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.5"},
+                              {"team_id": "5"},
+                              {"name": "Dues is Lucy"},
+                              {"managers": [{"manager": {"nickname": "Bradley"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "112.64"}}
+                          ]
+                        },
+                        "1": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.9"},
+                              {"team_id": "9"},
+                              {"name": "Hudson's Pack Is Back"},
+                              {"managers": [{"manager": {"nickname": "Eric"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "105.30"}}
+                          ]
+                        },
+                        "count": 2
+                      }
+                    }
+                  }
+                },
+                "5": {
+                  "matchup": {
+                    "week": "1",
+                    "status": "postevent",
+                    "0": {
+                      "teams": {
+                        "0": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.6"},
+                              {"team_id": "6"},
+                              {"name": "Reigning Champ"},
+                              {"managers": [{"manager": {"nickname": "Jett Miller"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "76.82"}}
+                          ]
+                        },
+                        "1": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.10"},
+                              {"team_id": "10"},
+                              {"name": "K.Y.K"},
+                              {"managers": [{"manager": {"nickname": "Justin Bagdzius"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "134.28"}}
+                          ]
+                        },
+                        "count": 2
+                      }
+                    }
+                  }
+                },
+                "6": {
+                  "matchup": {
+                    "week": "1",
+                    "status": "postevent",
+                    "0": {
+                      "teams": {
+                        "0": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.7"},
+                              {"team_id": "7"},
+                              {"name": "Schmitz & Giggles"},
+                              {"managers": [{"manager": {"nickname": "Rick"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "121.50"}}
+                          ]
+                        },
+                        "1": {
+                          "team": [
+                            [
+                              {"team_key": "461.l.50810.t.8"},
+                              {"team_id": "8"},
+                              {"name": "Hot Lloyd Summer"},
+                              {"managers": [{"manager": {"nickname": "Jonathan"}}]}
+                            ],
+                            {"team_points": {"coverage_type": "week", "week": "1", "total": "162.40"}}
+                          ]
+                        },
+                        "count": 2
+                      }
+                    }
+                  }
+                },
+                "count": 7
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

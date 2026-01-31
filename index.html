@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warrior Poets Fantasy Football</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/styles.css?v21">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <main class="main-content">
+      <header class="page-header">
+        <h1 class="page-title">Current Season</h1>
+        <p class="page-subtitle">2026 Season Overview</p>
+      </header>
+
+      <div class="page-content">
+        <!-- Current Season Stats -->
+        <div class="grid-4" style="margin-bottom: 24px;">
+          <div class="stat-card">
+            <div class="stat-label">Season Leader</div>
+            <div class="stat-value" id="seasonLeader">—</div>
+            <div class="stat-change" id="seasonLeaderPoints"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Sidebet Leader</div>
+            <div class="stat-value" id="sidebetLeader">—</div>
+            <div class="stat-change" id="sidebetLeaderTotal"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Week</div>
+            <div class="stat-value" id="weeksCompleted">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Average Points</div>
+            <div class="stat-value" id="avgPoints">—</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Points Standings -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">2026 Points Standings</h2>
+            </div>
+            <div class="card-body" id="pointsStandingsTable"></div>
+          </div>
+
+          <!-- Sidebet Standings -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">2026 Sidebet Standings</h2>
+            </div>
+            <div class="card-body" id="sidebetStandingsTable"></div>
+          </div>
+        </div>
+
+        <!-- Weekly Points Table -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">Weekly Breakdown</h2>
+          </div>
+          <div class="card-body" id="weeklyTable"></div>
+        </div>
+
+        <!-- Weekly Sidebets Table -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">Weekly Sidebets</h2>
+          </div>
+          <div class="card-body" id="weeklySidebetsTable"></div>
+        </div>
+
+        <!-- Cumulative Sidebets Chart -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">Cumulative Sidebets</h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height: 350px;">
+              <canvas id="cumulativeSidebetsChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/tables.js"></script>
+  <script src="js/charts.js"></script>
+  <script>
+    // Initialize page
+    WP.initPage('index');
+
+    // Get 2026 season data
+    const season2026 = LEAGUE_DATA.seasons['2026'];
+    const championships = LEAGUE_DATA.allTime.championships;
+
+    // Calculate stats - use null for empty/zero values to display as "-"
+    const standingsData = Object.entries(season2026.standings)
+      .map(([name, data]) => ({
+        name,
+        totalPoints: data.totalPoints || null,
+        pointsRank: data.pointsRank || null,
+        yearEndStanding: data.yearEndStanding || null,
+        championships: championships[name] || 0
+      }))
+      .sort((a, b) => (a.name).localeCompare(b.name));
+
+    const sidebetData = Object.entries(season2026.sidebetStandings)
+      .map(([name, data]) => ({
+        name,
+        total: data.total || null,
+        rank: data.rank || null,
+        lowManCount: data.lowManCount || null,
+        championships: championships[name] || 0
+      }))
+      .sort((a, b) => (a.name).localeCompare(b.name));
+
+    // Calculate weeks completed
+    const weeksCompleted = Object.keys(season2026.weeklyPoints[standingsData[0]?.name] || {}).length;
+
+    // Update stat cards - show "-" if no data
+    const hasData = weeksCompleted > 0;
+    const topScorer = hasData ? [...standingsData].sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))[0] : null;
+    const topSidebet = hasData ? [...sidebetData].sort((a, b) => (b.total || 0) - (a.total || 0))[0] : null;
+
+    document.getElementById('seasonLeader').textContent = topScorer?.name || '—';
+    document.getElementById('seasonLeaderPoints').textContent = hasData ? WP.formatNumber(topScorer?.totalPoints, 1) + ' pts' : '—';
+
+    document.getElementById('sidebetLeader').textContent = topSidebet?.name || '—';
+    document.getElementById('sidebetLeaderTotal').textContent = hasData ? WP.formatDelta(topSidebet?.total, 0) : '—';
+    document.getElementById('sidebetLeaderTotal').className = 'stat-change ' + (hasData ? WP.getValueClass(topSidebet?.total) : '');
+
+    document.getElementById('weeksCompleted').textContent = weeksCompleted || '—';
+
+    // Average points per team
+    const totalPointsSum = standingsData.reduce((sum, m) => sum + (m.totalPoints || 0), 0);
+    const avgPoints = hasData ? totalPointsSum / standingsData.length : null;
+    document.getElementById('avgPoints').textContent = hasData ? WP.formatNumber(avgPoints, 1) : '—';
+
+    // Create Points Standings Table
+    createTable('pointsStandingsTable', {
+      tableId: 'pointsTable',
+      defaultSort: 'name',
+      defaultOrder: 'asc',
+      columns: [
+        { key: 'rank', label: 'Rank', type: 'rank', sortable: false },
+        { key: 'name', label: 'Owner', type: 'member' },
+        { key: 'totalPoints', label: 'Points', type: 'number', decimals: 1 },
+        { key: 'yearEndStanding', label: 'Standing', type: 'rank' }
+      ],
+      data: standingsData.map((m, i) => ({
+        rank: i + 1,
+        ...m,
+        yearEndStanding: hasData ? m.yearEndStanding : i + 1
+      }))
+    });
+
+    // Create Sidebet Standings Table
+    createTable('sidebetStandingsTable', {
+      tableId: 'sidebetTable',
+      defaultSort: 'name',
+      defaultOrder: 'asc',
+      columns: [
+        { key: 'rank', label: 'Rank', type: 'rank', sortable: false },
+        { key: 'name', label: 'Owner', type: 'member' },
+        { key: 'total', label: 'Total', type: 'delta', decimals: 0 },
+        { key: 'lowManCount', label: 'Low Man', type: 'number', decimals: 0 }
+      ],
+      data: sidebetData.map((m, i) => ({
+        ...m,
+        rank: i + 1
+      }))
+    });
+
+    // Weekly Points Table - always show W1-W17
+    const weeklyPoints = season2026.weeklyPoints;
+    const weekNumbers = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17'];
+    const weeklyTableColumns = [
+      { key: 'name', label: 'Owner', type: 'member' },
+      ...weekNumbers.map(w => ({ key: 'w' + w, label: 'W' + w, type: 'number', decimals: 1 })),
+      { key: 'total', label: 'Total', type: 'number', decimals: 1 }
+    ];
+
+    const weeklyTableData = standingsData.map(member => {
+      const total = member.totalPoints || null;
+      const row = { name: member.name, total: total === 0 ? null : total, championships: member.championships };
+      weekNumbers.forEach(w => {
+        row['w' + w] = weeklyPoints[member.name]?.[w] || null;
+      });
+      return row;
+    });
+
+    createTable('weeklyTable', {
+      tableId: 'weeklyPoints',
+      defaultSort: 'name',
+      defaultOrder: 'asc',
+      columns: weeklyTableColumns,
+      data: weeklyTableData
+    });
+
+    // Weekly Sidebets Table - always show W1-W17
+    const weeklySidebets = season2026.weeklySidebets;
+    const sidebetTableColumns = [
+      { key: 'name', label: 'Owner', type: 'member' },
+      ...weekNumbers.map(w => ({ key: 'w' + w, label: 'W' + w, type: 'delta', decimals: 0 })),
+      { key: 'total', label: 'Total', type: 'delta', decimals: 0 }
+    ];
+
+    const sidebetTableData = sidebetData.map(member => {
+      const total = member.total || null;
+      const row = { name: member.name, total: total === 0 ? null : total, championships: 0 };
+      weekNumbers.forEach(w => {
+        row['w' + w] = weeklySidebets[member.name]?.[w] || null;
+      });
+      return row;
+    });
+
+    createTable('weeklySidebetsTable', {
+      tableId: 'weeklySidebets',
+      defaultSort: 'name',
+      defaultOrder: 'asc',
+      columns: sidebetTableColumns,
+      data: sidebetTableData
+    });
+
+    // Create Cumulative Sidebets Chart
+    const weeks = Array.from({length: weeksCompleted}, (_, i) => `W${i + 1}`);
+    WPCharts.createCumulativeChart('cumulativeSidebetsChart', {
+      labels: weeks,
+      datasets: standingsData.map(member => ({
+        label: member.name,
+        data: weeks.map((_, i) => season2026.weeklySidebets[member.name]?.[String(i + 1)] || 0),
+        color: WPCharts.colors.members[member.name],
+        hidden: !['Yonk', 'Lloyd', 'Andrew', 'Stern', 'Jett'].includes(member.name) // Show top/bottom
+      }))
+    });
+  </script>
+</body>
+</html>

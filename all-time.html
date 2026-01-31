@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All-Time Stats | Warrior Poets Fantasy Football</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/styles.css?v21">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <main class="main-content">
+      <header class="page-header">
+        <h1 class="page-title">All-Time Stats</h1>
+        <p class="page-subtitle">2009 - 2025 • 17 Seasons</p>
+      </header>
+
+      <div class="page-content">
+        <!-- All-Time Points Leaders -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">All-Time Points Totals</h2>
+          </div>
+          <div class="card-body" id="allTimePointsTable"></div>
+        </div>
+
+        <!-- All-Time Sidebet Leaders -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">All-Time Sidebet Totals</h2>
+          </div>
+          <div class="card-body" id="allTimeSidebetsTable"></div>
+        </div>
+
+        <!-- Year-End Standings History -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Year-End Standings History</h2>
+          </div>
+          <div class="card-body" id="yearEndStandingsTable"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/tables.js"></script>
+  <script src="js/charts.js"></script>
+  <script>
+    // Initialize page
+    WP.initPage('all-time');
+
+    const allTime = LEAGUE_DATA.allTime;
+    const championships = allTime.championships;
+    const years = LEAGUE_DATA.years;
+
+    // All-Time Points Totals
+    const pointsData = Object.entries(allTime.pointsTotals)
+      .map(([name, data]) => ({
+        name,
+        total: data.total || 0,
+        rank: data.rank || 99,
+        avg: data.avg || 0,
+        seasonsPlayed: Object.keys(data.yearly || {}).length,
+        championships: championships[name] || 0
+      }))
+      .sort((a, b) => b.total - a.total);
+
+    createTable('allTimePointsTable', {
+      tableId: 'allTimePoints',
+      defaultSort: 'total',
+      defaultOrder: 'desc',
+      columns: [
+        { key: 'displayRank', label: 'Rank', type: 'rank', sortable: false },
+        { key: 'name', label: 'Owner', type: 'member' },
+        { key: 'total', label: 'Total Points', type: 'number', decimals: 1 },
+        { key: 'avg', label: 'Avg/Season', type: 'number', decimals: 1 },
+        { key: 'seasonsPlayed', label: 'Seasons', type: 'number', decimals: 0 }
+      ],
+      data: pointsData.map((m, i) => ({
+        displayRank: i + 1,
+        ...m
+      }))
+    });
+
+    // All-Time Sidebet Totals
+    const sidebetData = Object.entries(allTime.sidebetTotals)
+      .map(([name, data]) => ({
+        name,
+        total: Math.round(data.total || 0),
+        rank: data.rank || 99,
+        avg: Math.round(data.avg || 0),
+        seasonsPlayed: Object.keys(data.yearly || {}).length,
+        championships: championships[name] || 0
+      }))
+      .sort((a, b) => b.total - a.total);
+
+    createTable('allTimeSidebetsTable', {
+      tableId: 'allTimeSidebets',
+      defaultSort: 'total',
+      defaultOrder: 'desc',
+      columns: [
+        { key: 'displayRank', label: 'Rank', type: 'rank', sortable: false },
+        { key: 'name', label: 'Owner', type: 'member' },
+        { key: 'total', label: 'Total', type: 'delta', decimals: 0 },
+        { key: 'avg', label: 'Avg/Season', type: 'delta', decimals: 0 },
+        { key: 'seasonsPlayed', label: 'Seasons', type: 'number', decimals: 0 }
+      ],
+      data: sidebetData.map((m, i) => ({
+        displayRank: i + 1,
+        ...m
+      }))
+    });
+
+    // Year-End Standings
+    const standingsData = Object.entries(allTime.yearEndStandings)
+      .map(([name, data]) => {
+        const yearlyStandings = data.yearly || {};
+        const values = Object.values(yearlyStandings).filter(v => typeof v === 'number');
+        const avg = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+        const best = values.length > 0 ? Math.min(...values) : null;
+        const worst = values.length > 0 ? Math.max(...values) : null;
+
+        return {
+          name,
+          championships: data.championships || 0,
+          avgStanding: avg,
+          bestFinish: best,
+          worstFinish: worst,
+          seasonsPlayed: values.length
+        };
+      })
+      .sort((a, b) => a.avgStanding - b.avgStanding);
+
+    createTable('yearEndStandingsTable', {
+      tableId: 'yearEndStandings',
+      defaultSort: 'avgStanding',
+      defaultOrder: 'asc',
+      columns: [
+        { key: 'displayRank', label: 'Rank', type: 'rank', sortable: false },
+        { key: 'name', label: 'Owner', type: 'member' },
+        { key: 'championships', label: 'Ships', type: 'number', decimals: 0 },
+        { key: 'avgStanding', label: 'Avg Standing', type: 'number', decimals: 2 },
+        { key: 'bestFinish', label: 'Best', type: 'rank' },
+        { key: 'worstFinish', label: 'Worst', type: 'number', decimals: 0 },
+        { key: 'seasonsPlayed', label: 'Seasons', type: 'number', decimals: 0 }
+      ],
+      data: standingsData.map((m, i) => ({
+        displayRank: i + 1,
+        ...m
+      }))
+    });
+
+  </script>
+</body>
+</html>

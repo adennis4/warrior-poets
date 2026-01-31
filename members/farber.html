@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farber | Warrior Poets Fantasy Football</title>
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="stylesheet" href="../css/styles.css?v21">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    
+    <main class="main-content">
+      <div class="page-header">
+        <h1>Farber </h1>
+        <p>Career Statistics & Performance History</p>
+      </div>
+      
+      <div class="page-content">
+        <div class="career-stats" id="careerStats"></div>
+        
+                <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">Points & Standings by Season</h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height: 300px;">
+              <canvas id="pointsChart"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">Season History</h2>
+          </div>
+          <div class="card-body">
+            <div id="seasonHistoryTable"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/data.js?v10"></script>
+  <script src="../js/nav.js?v10"></script>
+  <script src="../js/tables.js?v10"></script>
+  <script src="../js/charts.js?v12"></script>
+  <script>
+    (function() {
+      var MEMBER = 'Farber';
+      
+      try {
+        WP.initPage('members/farber');
+      } catch (e) {
+        console.error('initPage error:', e);
+      }
+      
+      try {
+        var allTime = LEAGUE_DATA.allTime;
+        var pointsData = allTime.pointsTotals[MEMBER] || {};
+        var sidebetData = allTime.sidebetTotals[MEMBER] || {};
+        var standingsData = allTime.yearEndStandings[MEMBER] || {};
+        var championships = allTime.championships[MEMBER] || 0;
+        
+        var seasonsPlayed = Object.keys(pointsData.yearly || {}).length;
+        var totalPoints = pointsData.total || 0;
+        var avgPoints = pointsData.avg || 0;
+        var totalSidebets = sidebetData.total || 0;
+        
+        var bestRank = null;
+        if (standingsData.yearly) {
+          var standings = Object.values(standingsData.yearly);
+          if (standings.length > 0) {
+            bestRank = Math.min.apply(null, standings);
+          }
+        }
+        
+        var trophyHtml = '';
+        for (var i = 0; i < championships; i++) {
+          trophyHtml += WP.getTrophySvg();
+        }
+        
+        var careerStatsHtml = 
+          '<div class="stat-card">' +
+            '<div class="stat-label">Championships</div>' +
+            '<div class="stat-value championship-count">' + 
+              (championships > 0 ? trophyHtml : '0') + 
+            '</div>' +
+          '</div>' +
+          '<div class="stat-card">' +
+            '<div class="stat-label">Seasons</div>' +
+            '<div class="stat-value">' + seasonsPlayed + '</div>' +
+          '</div>' +
+          '<div class="stat-card">' +
+            '<div class="stat-label">Total Pts</div>' +
+            '<div class="stat-value">' + WP.formatNumber(totalPoints, 0) + '</div>' +
+          '</div>' +
+          '<div class="stat-card">' +
+            '<div class="stat-label">Avg Pts</div>' +
+            '<div class="stat-value">' + WP.formatNumber(avgPoints, 1) + '</div>' +
+          '</div>' +
+          '<div class="stat-card">' +
+            '<div class="stat-label">Best Finish</div>' +
+            '<div class="stat-value">' + WP.formatRank(bestRank) + '</div>' +
+          '</div>' +
+          '<div class="stat-card">' +
+            '<div class="stat-label">Sidebets</div>' +
+            '<div class="stat-value ' + WP.getValueClass(totalSidebets) + '">' + WP.formatDelta(totalSidebets) + '</div>' +
+          '</div>';
+        
+        document.getElementById('careerStats').innerHTML = careerStatsHtml;
+      } catch (e) {
+        console.error('Stats error:', e);
+        document.getElementById('careerStats').innerHTML = 
+          '<div class="stat-card"><div class="stat-label">Error</div><div class="stat-value">' + e.message + '</div></div>';
+      }
+      
+      try {
+        var allTime = LEAGUE_DATA.allTime;
+        var pointsData = allTime.pointsTotals[MEMBER] || {};
+        var sidebetData = allTime.sidebetTotals[MEMBER] || {};
+        var standingsData = allTime.yearEndStandings[MEMBER] || {};
+        var years = LEAGUE_DATA.years;
+        var seasonTableData = [];
+        
+        for (var i = 0; i < years.length; i++) {
+          var year = years[i];
+          if (pointsData.yearly && pointsData.yearly[year] !== undefined) {
+            seasonTableData.push({
+              year: year,
+              points: pointsData.yearly[year] || 0,
+              standing: standingsData.yearly ? standingsData.yearly[year] : null,
+              sidebets: sidebetData.yearly ? sidebetData.yearly[year] : 0
+            });
+          }
+        }
+        seasonTableData.reverse();
+        
+        createTable('seasonHistoryTable', {
+          tableId: 'seasonHistory',
+          defaultSort: 'year',
+          defaultOrder: 'desc',
+          columns: [
+            { key: 'year', label: 'Year' },
+            { key: 'points', label: 'Points', type: 'number', decimals: 1 },
+            { key: 'standing', label: 'Finish', type: 'rank' },
+            { key: 'sidebets', label: 'Sidebets', type: 'delta' }
+          ],
+          data: seasonTableData
+        });
+      } catch (e) {
+        console.error('Table error:', e);
+      }
+      
+      try {
+        var allTime = LEAGUE_DATA.allTime;
+        var pointsData = allTime.pointsTotals[MEMBER] || {};
+        var standingsData = allTime.yearEndStandings[MEMBER] || {};
+        var years = LEAGUE_DATA.years;
+        var chartYears = [];
+        var chartPoints = [];
+        var chartStandings = [];
+        
+        for (var i = 0; i < years.length; i++) {
+          var year = years[i];
+          if (pointsData.yearly && pointsData.yearly[year] !== undefined) {
+            chartYears.push(year);
+            chartPoints.push(pointsData.yearly[year]);
+            chartStandings.push(standingsData.yearly ? standingsData.yearly[year] : null);
+          }
+        }
+        
+        // Create dual-axis chart
+        var ctx = document.getElementById('pointsChart');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: chartYears,
+            datasets: [
+              {
+                label: 'Points',
+                data: chartPoints,
+                borderColor: WPCharts.colors.members[MEMBER] || WPCharts.colors.primary,
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                tension: 0.3,
+                yAxisID: 'y'
+              },
+              {
+                label: 'Standing',
+                data: chartStandings,
+                borderColor: '#868e96',
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                tension: 0.3,
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false
+            },
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: '#5a5a7a'
+                }
+              },
+              tooltip: {
+                backgroundColor: '#ffffff',
+                titleColor: '#1a1a2e',
+                bodyColor: '#5a5a7a',
+                borderColor: '#e0e4ed',
+                borderWidth: 1,
+                callbacks: {
+                  label: function(context) {
+                    if (context.dataset.label === 'Standing') {
+                      var val = context.raw;
+                      if (val === null) return 'Standing: —';
+                      var suffix = ['th', 'st', 'nd', 'rd'];
+                      var v = val % 100;
+                      return 'Standing: ' + val + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
+                    }
+                    return 'Points: ' + context.raw.toLocaleString();
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: '#e0e4ed' },
+                ticks: { color: '#5a5a7a' }
+              },
+              y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                min: 1100,
+                max: 1900,
+                title: {
+                  display: true,
+                  text: 'Points',
+                  color: '#5a5a7a'
+                },
+                grid: { color: '#e0e4ed' },
+                ticks: { color: '#5a5a7a' }
+              },
+              y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                reverse: true,
+                min: 1,
+                max: 14,
+                title: {
+                  display: true,
+                  text: 'Standing',
+                  color: '#5a5a7a'
+                },
+                grid: { drawOnChartArea: false },
+                ticks: { 
+                  color: '#666666',
+                  stepSize: 1
+                }
+              }
+            }
+          }
+        });
+      } catch (e) {
+        console.error('Chart error:', e);
+      }
+    })();
+  </script>
+</body>
+</html>

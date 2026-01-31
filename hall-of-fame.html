@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hall of Fame | Warrior Poets Fantasy Football</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/styles.css?v21">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .hof-header {
+      text-align: center;
+      padding: 40px 20px;
+      background: linear-gradient(180deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 32px;
+    }
+    .hof-header h1 {
+      font-size: 2.5rem;
+      color: var(--accent-gold);
+      margin-bottom: 8px;
+    }
+    .hof-header p {
+      color: var(--text-secondary);
+    }
+    .trophy-large {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      color: var(--accent-gold);
+    }
+    .champions-list {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .championship-timeline {
+      margin-top: 48px;
+    }
+    .timeline-container {
+      position: relative;
+      overflow-x: auto;
+      padding: 20px 0 40px;
+    }
+    .timeline-track {
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+      min-width: max-content;
+      padding: 0 20px;
+    }
+    .timeline-track::before {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: 20px;
+      right: 20px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-teal) 50%, var(--accent-gold) 100%);
+      border-radius: 2px;
+    }
+    .timeline-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 90px;
+      position: relative;
+    }
+    .timeline-year-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 12px;
+    }
+    .timeline-dot {
+      width: 16px;
+      height: 16px;
+      background: var(--accent-gold);
+      border: 3px solid var(--bg-card);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px var(--accent-gold);
+      position: relative;
+      z-index: 1;
+    }
+    .timeline-connector {
+      width: 2px;
+      height: 20px;
+      background: var(--accent-gold);
+      margin: 4px 0;
+    }
+    .timeline-champion {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-align: center;
+    }
+    .timeline-trophy {
+      color: var(--accent-gold);
+    }
+    .timeline-champion-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      max-width: 80px;
+      line-height: 1.2;
+    }
+    .records-section {
+      margin-top: 48px;
+    }
+    .records-section h2 {
+      margin-bottom: 24px;
+    }
+    .stats-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .record-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      width: 200px;
+      flex-shrink: 0;
+    }
+    .record-card-title {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .record-card-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      margin-bottom: 8px;
+    }
+    .record-card-value.negative {
+      color: var(--negative);
+    }
+    .record-card-detail {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <main class="main-content">
+      <div class="hof-header">
+        <div class="trophy-large">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+            <path d="M4 22h16"></path>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+          </svg>
+        </div>
+        <h1>Hall of Fame</h1>
+        <p>Celebrating Warrior Poets Champions</p>
+      </div>
+
+      <div class="page-content">
+        <!-- Champions Leaderboard -->
+        <div class="champions-list" id="championsLeaderboard"></div>
+
+        <!-- Championship Timeline -->
+        <div class="championship-timeline">
+          <h2 style="margin-bottom: 24px;">Championship Timeline</h2>
+          <div id="timeline"></div>
+        </div>
+
+        <!-- The Best Records -->
+        <div class="records-section">
+          <h2>The Best</h2>
+          <div class="stats-grid" id="bestRecordsGrid"></div>
+        </div>
+
+        <!-- The Worst Records -->
+        <div class="records-section">
+          <h2>The Worst</h2>
+          <div class="stats-grid" id="worstRecordsGrid"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/tables.js"></script>
+  <script src="js/charts.js"></script>
+  <script>
+    // Initialize page
+    WP.initPage('hall-of-fame');
+
+    const allTime = LEAGUE_DATA.allTime;
+    const championships = allTime.championships;
+    const yearEndStandings = allTime.yearEndStandings;
+    const seasons = LEAGUE_DATA.seasons;
+
+    // Get champions with their winning years (only multiple winners)
+    const championsData = Object.entries(championships)
+      .map(([name, count]) => {
+        const years = [];
+        Object.entries(yearEndStandings[name]?.yearly || {}).forEach(([year, standing]) => {
+          if (standing === 1) years.push(year);
+        });
+        return { name, count, years };
+      })
+      .filter(champ => champ.count > 1)
+      .sort((a, b) => b.count - a.count);
+
+    // Champions Leaderboard
+    const leaderboardHtml = championsData.map((champ, i) => `
+      <div class="hof-champion">
+        <div class="hof-rank">${i + 1}</div>
+        <div class="hof-info">
+          <div class="hof-name">
+            ${champ.name}
+            <div class="hof-trophies">
+              ${Array(champ.count).fill(WP.icons.trophy).join('')}
+            </div>
+          </div>
+          <div class="hof-years">${champ.years.join(', ')}</div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('championsLeaderboard').innerHTML = leaderboardHtml;
+
+    // Championship Timeline - Horizontal
+    const years = LEAGUE_DATA.years.slice(); // oldest to newest for left-to-right
+    let timelineHtml = '<div class="timeline-container"><div class="timeline-track">';
+
+    years.forEach(year => {
+      let champion = null;
+      Object.entries(yearEndStandings).forEach(([name, data]) => {
+        if (data.yearly?.[year] === 1) {
+          champion = name;
+        }
+      });
+
+      if (champion) {
+        timelineHtml += `
+          <div class="timeline-item">
+            <div class="timeline-year-label">${year}</div>
+            <div class="timeline-dot"></div>
+            <div class="timeline-connector"></div>
+            <div class="timeline-champion">
+              <span class="timeline-trophy">${WP.icons.trophy}</span>
+              <span class="timeline-champion-name">${champion}</span>
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    timelineHtml += '</div></div>';
+    document.getElementById('timeline').innerHTML = timelineHtml;
+
+    // Calculate Records
+    const bestRecords = [];
+    const worstRecords = [];
+
+    // Season Points
+    let highestSeasonPoints = { value: 0, name: '', year: '' };
+    let lowestSeasonPoints = { value: Infinity, name: '', year: '' };
+    Object.entries(allTime.pointsTotals).forEach(([name, data]) => {
+      Object.entries(data.yearly || {}).forEach(([year, points]) => {
+        if (typeof points === 'number') {
+          if (points > highestSeasonPoints.value) {
+            highestSeasonPoints = { value: points, name, year };
+          }
+          if (points < lowestSeasonPoints.value) {
+            lowestSeasonPoints = { value: points, name, year };
+          }
+        }
+      });
+    });
+    bestRecords.push({
+      title: 'Season Points',
+      value: WP.formatNumber(highestSeasonPoints.value, 1),
+      detail: `${highestSeasonPoints.name} (${highestSeasonPoints.year})`
+    });
+    worstRecords.push({
+      title: 'Season Points',
+      value: WP.formatNumber(lowestSeasonPoints.value, 1),
+      detail: `${lowestSeasonPoints.name} (${lowestSeasonPoints.year})`
+    });
+
+    // Sidebet Season
+    let bestSeasonSidebets = { value: -Infinity, name: '', year: '' };
+    let worstSeasonSidebets = { value: Infinity, name: '', year: '' };
+    Object.entries(allTime.sidebetTotals).forEach(([name, data]) => {
+      Object.entries(data.yearly || {}).forEach(([year, total]) => {
+        if (typeof total === 'number') {
+          if (total > bestSeasonSidebets.value) {
+            bestSeasonSidebets = { value: total, name, year };
+          }
+          if (total < worstSeasonSidebets.value) {
+            worstSeasonSidebets = { value: total, name, year };
+          }
+        }
+      });
+    });
+    bestRecords.push({
+      title: 'Sidebet Season',
+      value: WP.formatDelta(bestSeasonSidebets.value, 0),
+      detail: `${bestSeasonSidebets.name} (${bestSeasonSidebets.year})`
+    });
+    worstRecords.push({
+      title: 'Sidebet Season',
+      value: WP.formatDelta(worstSeasonSidebets.value, 0),
+      detail: `${worstSeasonSidebets.name} (${worstSeasonSidebets.year})`
+    });
+
+    // Single Week
+    let highestWeekPoints = { value: 0, name: '', year: '', week: '' };
+    let lowestWeekPoints = { value: Infinity, name: '', year: '', week: '' };
+    Object.entries(seasons).forEach(([year, seasonData]) => {
+      Object.entries(seasonData.weeklyPoints || {}).forEach(([name, weeks]) => {
+        Object.entries(weeks).forEach(([week, points]) => {
+          if (typeof points === 'number') {
+            if (points > highestWeekPoints.value) {
+              highestWeekPoints = { value: points, name, year, week };
+            }
+            if (points < lowestWeekPoints.value) {
+              lowestWeekPoints = { value: points, name, year, week };
+            }
+          }
+        });
+      });
+    });
+    bestRecords.push({
+      title: 'Single Week',
+      value: WP.formatNumber(highestWeekPoints.value, 2),
+      detail: `${highestWeekPoints.name} (${highestWeekPoints.year} W${highestWeekPoints.week})`
+    });
+    worstRecords.push({
+      title: 'Single Week',
+      value: WP.formatNumber(lowestWeekPoints.value, 2),
+      detail: `${lowestWeekPoints.name} (${lowestWeekPoints.year} W${lowestWeekPoints.week})`
+    });
+
+    // Championships / Last Places
+    const mostChampionships = championsData[0];
+    bestRecords.push({
+      title: 'Championships',
+      value: mostChampionships?.count?.toString() || '0',
+      detail: mostChampionships?.name || '—'
+    });
+
+    // Count last places (find actual last place per season)
+    // First, determine the last place position for each year
+    let lastPlaceByYear = {};
+    Object.entries(yearEndStandings).forEach(([name, data]) => {
+      Object.entries(data.yearly || {}).forEach(([year, standing]) => {
+        if (typeof standing === 'number') {
+          if (!lastPlaceByYear[year] || standing > lastPlaceByYear[year]) {
+            lastPlaceByYear[year] = standing;
+          }
+        }
+      });
+    });
+
+    // Now count how many times each member finished in last place
+    let lastPlaceCounts = {};
+    Object.entries(yearEndStandings).forEach(([name, data]) => {
+      Object.entries(data.yearly || {}).forEach(([year, standing]) => {
+        if (typeof standing === 'number' && standing === lastPlaceByYear[year]) {
+          lastPlaceCounts[name] = (lastPlaceCounts[name] || 0) + 1;
+        }
+      });
+    });
+
+    const mostLastPlaces = Object.entries(lastPlaceCounts)
+      .sort((a, b) => b[1] - a[1])[0];
+    worstRecords.push({
+      title: 'Last Places',
+      value: mostLastPlaces ? mostLastPlaces[1].toString() : '0',
+      detail: mostLastPlaces ? mostLastPlaces[0] : '—'
+    });
+
+    // Season Standing Average (min 5 seasons)
+    let bestAvgStanding = { value: Infinity, name: '' };
+    let worstAvgStanding = { value: 0, name: '' };
+    Object.entries(yearEndStandings).forEach(([name, data]) => {
+      const standings = Object.values(data.yearly || {}).filter(v => typeof v === 'number');
+      if (standings.length >= 5) {
+        const avg = standings.reduce((a, b) => a + b, 0) / standings.length;
+        if (avg < bestAvgStanding.value) {
+          bestAvgStanding = { value: avg, name };
+        }
+        if (avg > worstAvgStanding.value) {
+          worstAvgStanding = { value: avg, name };
+        }
+      }
+    });
+    bestRecords.push({
+      title: 'Season Standing Avg',
+      value: bestAvgStanding.value.toFixed(2),
+      detail: bestAvgStanding.name
+    });
+    worstRecords.push({
+      title: 'Season Standing Avg',
+      value: worstAvgStanding.value.toFixed(2),
+      detail: worstAvgStanding.name
+    });
+
+    // Season Points Average (min 5 seasons)
+    let bestAvgPoints = { value: 0, name: '' };
+    let worstAvgPoints = { value: Infinity, name: '' };
+    Object.entries(allTime.pointsTotals).forEach(([name, data]) => {
+      const pointsValues = Object.values(data.yearly || {}).filter(v => typeof v === 'number');
+      if (pointsValues.length >= 5) {
+        const avg = pointsValues.reduce((a, b) => a + b, 0) / pointsValues.length;
+        if (avg > bestAvgPoints.value) {
+          bestAvgPoints = { value: avg, name };
+        }
+        if (avg < worstAvgPoints.value) {
+          worstAvgPoints = { value: avg, name };
+        }
+      }
+    });
+    bestRecords.push({
+      title: 'Season Points Avg',
+      value: WP.formatNumber(bestAvgPoints.value, 1),
+      detail: bestAvgPoints.name
+    });
+    worstRecords.push({
+      title: 'Season Points Avg',
+      value: WP.formatNumber(worstAvgPoints.value, 1),
+      detail: worstAvgPoints.name
+    });
+
+    // Render Best Records
+    const bestRecordsHtml = bestRecords.map(record => `
+      <div class="record-card">
+        <div class="record-card-title">${record.title}</div>
+        <div class="record-card-value">${record.value}</div>
+        <div class="record-card-detail">${record.detail}</div>
+      </div>
+    `).join('');
+
+    document.getElementById('bestRecordsGrid').innerHTML = bestRecordsHtml;
+
+    // Render Worst Records
+    const worstRecordsHtml = worstRecords.map(record => `
+      <div class="record-card">
+        <div class="record-card-title">${record.title}</div>
+        <div class="record-card-value${record.isNegative ? ' negative' : ''}">${record.value}</div>
+        <div class="record-card-detail">${record.detail}</div>
+      </div>
+    `).join('');
+
+    document.getElementById('worstRecordsGrid').innerHTML = worstRecordsHtml;
+  </script>
+</body>
+</html>

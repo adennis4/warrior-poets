@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2022 Season | Warrior Poets Fantasy Football</title>
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="stylesheet" href="../css/styles.css?v21">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <main class="main-content">
+      <header class="page-header">
+        <h1 class="page-title">2022 Season</h1>
+        <p class="page-subtitle" id="championSubtitle"></p>
+      </header>
+
+      <div class="page-content">
+        <!-- Season Stats -->
+        <div class="grid-4" style="margin-bottom: 24px;">
+          <div class="stat-card">
+            <div class="stat-label">Champion</div>
+            <div class="stat-value" id="champion">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Top Scorer</div>
+            <div class="stat-value" id="topScorer">—</div>
+            <div class="stat-change" id="topScorerPoints"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Sidebet Winner</div>
+            <div class="stat-value" id="sidebetWinner">—</div>
+            <div class="stat-change" id="sidebetWinnerTotal"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">League Size</div>
+            <div class="stat-value" id="leagueSize">—</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Points Standings -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Final Standings</h2>
+            </div>
+            <div class="card-body" id="standingsTable"></div>
+          </div>
+
+          <!-- Sidebet Standings -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Sidebet Results</h2>
+            </div>
+            <div class="card-body" id="sidebetTable"></div>
+          </div>
+        </div>
+
+        <!-- Weekly Points Table -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">Weekly Breakdown</h2>
+          </div>
+          <div class="card-body" id="weeklyTable"></div>
+        </div>
+
+        <!-- Weekly Sidebets Table -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">Weekly Sidebets</h2>
+          </div>
+          <div class="card-body" id="weeklySidebetsTable"></div>
+        </div>
+
+        <!-- Cumulative Sidebets Chart -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <h2 class="card-title">Cumulative Sidebets</h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height: 350px;">
+              <canvas id="cumulativeSidebetsChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/tables.js"></script>
+  <script src="../js/charts.js"></script>
+  <script>
+    const YEAR = '2022';
+
+    // Initialize page
+    WP.initPage('years/' + YEAR);
+
+    const season = LEAGUE_DATA.seasons[YEAR];
+    const championships = LEAGUE_DATA.allTime.championships;
+    const yearEndStandings = LEAGUE_DATA.allTime.yearEndStandings;
+
+    if (!season) {
+      document.querySelector('.page-content').innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No data available for this season.</p>';
+    } else {
+      // Find champion (year end standing = 1)
+      let champion = null;
+      Object.entries(yearEndStandings).forEach(([name, data]) => {
+        if (data.yearly?.[YEAR] === 1) {
+          champion = name;
+        }
+      });
+
+      // Calculate standings data
+      const standingsData = Object.entries(season.standings)
+        .map(([name, data]) => ({
+          name,
+          totalPoints: data.totalPoints || 0,
+          pointsRank: data.pointsRank || 99,
+          yearEndStanding: data.yearEndStanding || 99,
+          championships: 0  // Don't show trophies on year pages
+        }))
+        .sort((a, b) => a.yearEndStanding - b.yearEndStanding);
+
+      const sidebetData = Object.entries(season.sidebetStandings)
+        .map(([name, data]) => ({
+          name,
+          total: data.total || 0,
+          rank: data.rank || 99,
+          lowManCount: data.lowManCount || 0,
+          championships: 0  // Don't show trophies on year pages
+        }))
+        .sort((a, b) => b.total - a.total);
+
+      // Update stats
+      document.getElementById('champion').textContent = champion || '—';
+      document.getElementById('championSubtitle').textContent = champion ? 'Champion: ' + champion : '';
+
+      const topScorer = standingsData.reduce((max, m) => m.totalPoints > max.totalPoints ? m : max, standingsData[0]);
+      document.getElementById('topScorer').textContent = topScorer?.name || '—';
+      document.getElementById('topScorerPoints').textContent = WP.formatNumber(topScorer?.totalPoints, 1) + ' pts';
+
+      const sidebetWinner = sidebetData[0];
+      document.getElementById('sidebetWinner').textContent = sidebetWinner?.name || '—';
+      document.getElementById('sidebetWinnerTotal').textContent = WP.formatDelta(sidebetWinner?.total, 0);
+      document.getElementById('sidebetWinnerTotal').className = 'stat-change ' + WP.getValueClass(sidebetWinner?.total);
+
+      document.getElementById('leagueSize').textContent = standingsData.length;
+
+      // Create standings table
+      createTable('standingsTable', {
+        tableId: 'standings',
+        defaultSort: 'yearEndStanding',
+        defaultOrder: 'asc',
+        columns: [
+          { key: 'yearEndStanding', label: 'Place', type: 'rank' },
+          { key: 'name', label: 'Owner', type: 'member' },
+          { key: 'totalPoints', label: 'Points', type: 'number', decimals: 1 },
+          { key: 'pointsRank', label: 'Pts Rank', type: 'rank' }
+        ],
+        data: standingsData
+      });
+
+      // Create sidebet table
+      createTable('sidebetTable', {
+        tableId: 'sidebets',
+        defaultSort: 'total',
+        defaultOrder: 'desc',
+        columns: [
+          { key: 'displayRank', label: 'Rank', type: 'rank', sortable: false },
+          { key: 'name', label: 'Owner', type: 'member' },
+          { key: 'total', label: 'Total', type: 'delta', decimals: 0 },
+          { key: 'lowManCount', label: 'Low Man', type: 'number', decimals: 0 }
+        ],
+        data: sidebetData.map((m, i) => ({ displayRank: i + 1, ...m }))
+      });
+
+      // Cumulative Sidebets Chart
+      const weeklySidebets = season.weeklySidebets;
+      const weeks = Object.keys(weeklySidebets[Object.keys(weeklySidebets)[0]] || {}).sort((a, b) => parseInt(a) - parseInt(b));
+      const weekLabels = weeks.map(w => 'W' + w);
+
+      WPCharts.createCumulativeChart('cumulativeSidebetsChart', {
+        labels: weekLabels,
+        datasets: standingsData.map(member => ({
+          label: member.name,
+          data: weeks.map(w => weeklySidebets[member.name]?.[w] || 0),
+          color: WPCharts.colors.members[member.name]
+        }))
+      });
+
+      // Weekly Points Table
+      const weeklyPoints = season.weeklyPoints;
+      const weeklyTableColumns = [
+        { key: 'name', label: 'Owner', type: 'member' },
+        ...weeks.map(w => ({ key: 'w' + w, label: 'W' + w, type: 'number', decimals: 1 })),
+        { key: 'total', label: 'Total', type: 'number', decimals: 1 }
+      ];
+
+      const weeklyTableData = standingsData.map(member => {
+        const row = { name: member.name, total: member.totalPoints, championships: 0 };
+        weeks.forEach(w => {
+          row['w' + w] = weeklyPoints[member.name]?.[w] || null;
+        });
+        return row;
+      });
+
+      createTable('weeklyTable', {
+        tableId: 'weeklyPoints',
+        defaultSort: 'total',
+        defaultOrder: 'desc',
+        columns: weeklyTableColumns,
+        data: weeklyTableData
+      });
+
+      // Weekly Sidebets Table
+      const sidebetTableColumns = [
+        { key: 'name', label: 'Owner', type: 'member' },
+        ...weeks.map(w => ({ key: 'w' + w, label: 'W' + w, type: 'delta', decimals: 0 })),
+        { key: 'total', label: 'Total', type: 'delta', decimals: 0 }
+      ];
+
+      const sidebetTableData = sidebetData.map(member => {
+        const row = { name: member.name, total: member.total, championships: 0 };
+        weeks.forEach(w => {
+          row['w' + w] = weeklySidebets[member.name]?.[w] || null;
+        });
+        return row;
+      });
+
+      createTable('weeklySidebetsTable', {
+        tableId: 'weeklySidebets',
+        defaultSort: 'total',
+        defaultOrder: 'desc',
+        columns: sidebetTableColumns,
+        data: sidebetTableData
+      });
+    }
+  </script>
+</body>
+</html>
