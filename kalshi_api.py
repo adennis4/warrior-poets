@@ -147,7 +147,7 @@ class KalshiAPI:
             json=data
         )
 
-        if response.status_code != 200:
+        if response.status_code not in [200, 201]:
             raise Exception(f"API request failed: {response.status_code} - {response.text}")
 
         return response.json()
@@ -290,6 +290,7 @@ class KalshiAPI:
     def create_order(self,
                      ticker: str,
                      side: str,
+                     action: str = "buy",
                      type: str = "limit",
                      count: int = 1,
                      yes_price: int = None,
@@ -301,6 +302,7 @@ class KalshiAPI:
         Args:
             ticker: Market ticker
             side: "yes" or "no"
+            action: "buy" or "sell"
             type: "limit" or "market"
             count: Number of contracts
             yes_price: Price in cents for YES (1-99)
@@ -313,6 +315,7 @@ class KalshiAPI:
         data = {
             'ticker': ticker,
             'side': side,
+            'action': action,
             'type': type,
             'count': count
         }
@@ -341,6 +344,19 @@ SPORTS_SERIES = {
     'nhl': 'KXNHL',          # Stanley Cup Finals
     'mlb': 'KXMLB',          # World Series / Pro Baseball Championship
     'ncaa_basketball': 'KXNCAAMBTOTAL',  # NCAA Basketball totals
+}
+
+# NFL prop market series
+NFL_PROP_SERIES = {
+    'championship': 'KXSB',              # Super Bowl winner
+    'spread': 'KXNFLSPREAD',             # Point spreads
+    'total': 'KXNFLTOTAL',               # Total points
+    'team_total': 'KXNFLTEAMTOTAL',      # Team point totals
+    'first_td': 'KXNFLFIRSTTD',          # First touchdown scorer
+    'anytime_td': 'KXNFLANYTD',          # Anytime touchdown scorer
+    'passing_yards': 'KXNFLPASSYDS',     # Passing yards props
+    'rushing_yards': 'KXNFLRUSHYDS',     # Rushing yards props
+    'receiving_yards': 'KXNFLRECYDS',    # Receiving yards props
 }
 
 # Player prop series (demo environment primarily)
@@ -412,6 +428,30 @@ def get_nhl_stanley_cup_markets(api: KalshiAPI) -> List[Dict]:
 def get_mlb_world_series_markets(api: KalshiAPI) -> List[Dict]:
     """Get all World Series / Pro Baseball Championship markets."""
     return get_championship_markets(api, 'mlb')
+
+
+def get_nfl_props(api: KalshiAPI) -> Dict[str, List[Dict]]:
+    """
+    Get all NFL prop markets organized by category.
+
+    Returns:
+        Dict with keys for each prop type containing list of markets
+    """
+    all_props = {}
+
+    for prop_type, series in NFL_PROP_SERIES.items():
+        try:
+            result = api.get_markets(series_ticker=series, limit=100)
+            markets = result.get('markets', [])
+            # Filter to active only and sort by volume
+            markets = [m for m in markets if m.get('status') == 'active']
+            markets.sort(key=lambda m: m.get('volume', 0), reverse=True)
+            all_props[prop_type] = markets
+        except Exception as e:
+            print(f"Error fetching {prop_type}: {e}")
+            all_props[prop_type] = []
+
+    return all_props
 
 
 def find_sports_markets(api: KalshiAPI) -> List[Dict]:

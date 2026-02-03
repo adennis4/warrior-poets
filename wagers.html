@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wagers - Warrior Poets</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/styles.css?v24">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .balance-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .balance-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .balance-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .balance-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+
+    .kalshi-link {
+      background: var(--accent-blue);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .kalshi-link:hover {
+      background: #2a47c9;
+      color: white;
+    }
+
+    .game-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .team-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .team-sea { background: linear-gradient(135deg, #002244 0%, #69BE28 100%); }
+    .team-ne { background: linear-gradient(135deg, #002244 0%, #C60C30 100%); }
+
+    .game-vs {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .game-info {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-left: 24px;
+      padding-left: 24px;
+      border-left: 1px solid var(--border-color);
+    }
+
+    .markets-section {
+      margin-bottom: 20px;
+    }
+
+    .section-header {
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .props-container {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .props-list {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      width: 420px;
+      flex-shrink: 0;
+      height: fit-content;
+    }
+
+    .prop-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.15s;
+      height: 44px;
+      box-sizing: border-box;
+    }
+
+    .prop-row:last-child {
+      border-bottom: none;
+    }
+
+    .prop-row:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .prop-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .prop-title {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .prop-odds {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .odds-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: all 0.15s;
+      font-size: 0.75rem;
+      min-width: 70px;
+    }
+
+    .odds-btn.yes {
+      background: rgba(52, 89, 237, 0.1);
+      border: none;
+    }
+
+    .odds-btn.yes:hover {
+      background: rgba(52, 89, 237, 0.18);
+    }
+
+    .odds-btn.no {
+      background: rgba(147, 88, 196, 0.1);
+      border: none;
+    }
+
+    .odds-btn.no:hover {
+      background: rgba(147, 88, 196, 0.18);
+    }
+
+    .odds-label {
+      font-weight: 600;
+    }
+
+    .odds-btn.yes .odds-label { color: var(--accent-blue); }
+    .odds-btn.no .odds-label { color: #7c4dab; }
+
+    .odds-price {
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .odds-btn.yes .odds-price { color: var(--accent-blue); }
+    .odds-btn.no .odds-price { color: #7c4dab; }
+
+    .empty-message {
+      padding: 16px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .props-container {
+        flex-direction: column;
+      }
+      .props-list {
+        width: 100%;
+        max-width: 500px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .game-header {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .game-info {
+        border-left: none;
+        padding-left: 0;
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+        padding-top: 12px;
+        border-top: 1px solid var(--border-color);
+      }
+      .prop-title {
+        font-size: 0.75rem;
+      }
+      .odds-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <main class="main-content">
+      <header class="page-header">
+        <h1 class="page-title">Wagers</h1>
+        <p class="page-subtitle">Super Bowl LX Props</p>
+      </header>
+
+      <div class="page-content">
+        <!-- Balance Bar -->
+        <div class="balance-bar">
+          <div class="balance-info">
+            <div>
+              <div class="balance-label">Kalshi Balance</div>
+              <div class="balance-value" id="balanceValue">$—</div>
+            </div>
+          </div>
+          <div class="auth-buttons">
+            <button class="kalshi-link" id="loginBtn" onclick="showLoginModal()">
+              Connect to Bet
+            </button>
+            <button class="kalshi-link logout-btn" id="logoutBtn" onclick="logout()" style="display: none;">
+              Disconnect
+            </button>
+          </div>
+        </div>
+
+        <!-- Game Header -->
+        <div class="game-header">
+          <div class="team">
+            <div class="team-logo team-sea">🦅</div>
+            Seattle
+          </div>
+          <div class="game-vs">vs</div>
+          <div class="team">
+            <div class="team-logo team-ne">🏈</div>
+            New England
+          </div>
+          <div class="game-info">
+            Super Bowl LX<br>
+            Sun, Feb 8 • 6:30 PM ET
+          </div>
+        </div>
+
+        <!-- Manager sections will be dynamically generated -->
+        <div id="managerSections"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span class="toast-message" id="toastMessage"></span>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Connect Your Kalshi Account</h3>
+        <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Step 1: Instructions -->
+        <div class="setup-step" id="setupStep1">
+          <div class="step-title">One-Time Setup</div>
+          <p class="step-desc">To place bets from this page, you need to create a key on Kalshi. This only takes a minute.</p>
+          <a href="https://kalshi.com/account/api" target="_blank" class="step-btn">
+            Open Kalshi →
+          </a>
+          <div class="step-instructions">
+            <p>On Kalshi:</p>
+            <ol>
+              <li>Click <strong>"Account & Security"</strong> in the right nav bar</li>
+              <li>Scroll down and click <strong>"Create Key"</strong> under API Keys</li>
+              <li>Add a nickname (e.g., "Warrior Poets")</li>
+              <li>Select <strong>"Read/Write"</strong> and click <strong>"Create"</strong></li>
+              <li>Don't close that window!</li>
+            </ol>
+          </div>
+          <button class="btn-submit" onclick="showStep2()" style="margin-top: 16px;">I've created my key →</button>
+        </div>
+
+        <!-- Step 2: Paste keys -->
+        <div class="setup-step" id="setupStep2" style="display: none;">
+          <div class="step-title">Paste Your Keys</div>
+          <p class="step-desc">Copy the values from the Kalshi window you left open.</p>
+
+          <div class="order-field">
+            <label>API Key ID</label>
+            <input type="text" id="apiKeyInput" class="order-price-input" placeholder="Paste your API Key ID here">
+          </div>
+
+          <div class="order-field">
+            <label>Private Key <span class="label-hint">(the entire block, including the BEGIN and END lines)</span></label>
+            <textarea id="privateKeyInput" class="private-key-input" placeholder="-----BEGIN RSA PRIVATE KEY-----
+Paste the entire key here
+-----END RSA PRIVATE KEY-----"></textarea>
+          </div>
+
+          <div class="order-error" id="loginError"></div>
+
+          <div class="step-buttons">
+            <button class="btn-cancel" onclick="showStep1()">← Back</button>
+            <button class="btn-submit" id="connectBtn" onclick="login()">Connect Account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Modal -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Place Order</h3>
+        <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="order-market" id="orderMarketTitle"></div>
+        <div class="order-side" id="orderSideLabel"></div>
+
+        <div class="order-field">
+          <label>Contracts</label>
+          <div class="order-input-group">
+            <button class="order-adjust" onclick="adjustCount(-1)">−</button>
+            <input type="number" id="orderCount" value="1" min="1" max="100">
+            <button class="order-adjust" onclick="adjustCount(1)">+</button>
+          </div>
+        </div>
+
+        <div class="order-field">
+          <label>Price (¢)</label>
+          <input type="number" id="orderPrice" min="1" max="99" class="order-price-input">
+        </div>
+
+        <div class="order-summary">
+          <div class="order-summary-row">
+            <span>Cost</span>
+            <span id="orderCost">$0.00</span>
+          </div>
+          <div class="order-summary-row">
+            <span>Potential Payout</span>
+            <span id="orderPayout">$0.00</span>
+          </div>
+        </div>
+
+        <div class="order-error" id="orderError"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeOrderModal()">Cancel</button>
+        <button class="btn-submit" id="submitOrderBtn" onclick="submitOrder()">Place Order</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 360px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .order-market {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .order-side {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .order-side.yes {
+      color: var(--accent-blue);
+    }
+
+    .order-side.no {
+      color: var(--text-secondary);
+    }
+
+    .order-field {
+      margin-bottom: 16px;
+    }
+
+    .order-field label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .order-input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .order-adjust {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .order-adjust:hover {
+      background: var(--bg-secondary);
+      border-color: var(--accent-blue);
+    }
+
+    .order-input-group input {
+      width: 80px;
+      height: 36px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .order-price-input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .order-summary {
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 20px;
+    }
+
+    .order-summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 4px 0;
+    }
+
+    .order-summary-row span:first-child {
+      color: var(--text-secondary);
+    }
+
+    .order-summary-row span:last-child {
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .order-error {
+      color: #e74c3c;
+      font-size: 0.8rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .order-error.visible {
+      display: block;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-cancel:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .btn-submit {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: var(--accent-blue);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-submit:hover {
+      background: #2a47c9;
+    }
+
+    .btn-submit:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .odds-btn {
+      cursor: pointer;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: #2ecc71;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      z-index: 2000;
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.error {
+      background: #e74c3c;
+    }
+
+    /* Auth buttons */
+    .auth-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .logout-btn {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+    }
+
+    .logout-btn:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Login modal - step-based UI */
+    .setup-step {
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-number {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent-blue);
+      margin-bottom: 4px;
+    }
+
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .step-btn {
+      display: inline-block;
+      background: var(--accent-blue);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .step-btn:hover {
+      background: #2a47c9;
+      color: white;
+    }
+
+    .step-instructions {
+      margin-top: 20px;
+      padding: 16px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .step-instructions p {
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .step-instructions ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .step-instructions li {
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .step-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .step-buttons .btn-cancel {
+      flex: 0 0 auto;
+    }
+
+    .step-buttons .btn-submit {
+      flex: 1;
+    }
+
+    .label-hint {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .private-key-input {
+      width: 100%;
+      height: 140px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      resize: vertical;
+      line-height: 1.4;
+    }
+  </style>
+
+  <script src="js/nav.js"></script>
+  <script src="js/wagers-data.js"></script>
+  <script src="js/roster-data.js"></script>
+  <script>
+    WP.initPage('wagers');
+
+    const KALSHI_URL = 'https://kalshi.com/sports/football/pro-football/props';
+
+    function parseTitle(title) {
+      // Championship
+      if (title.includes('win the 2026 Pro Football')) {
+        const match = title.match(/Will (?:the )?(.+?) win/i);
+        return { main: match ? match[1] + ' wins' : title, sub: 'Championship' };
+      }
+
+      // Spread
+      if (title.includes('wins by over')) {
+        const match = title.match(/(.+?) wins by over ([\d.]+)/);
+        return { main: match ? `${match[1]} -${match[2]}` : title, sub: 'Spread' };
+      }
+
+      // Total
+      if (title.includes('Over') && title.includes('total points')) {
+        const match = title.match(/Over ([\d.]+) total points/);
+        return { main: match ? `Over ${match[1]}` : title, sub: 'Total Points' };
+      }
+
+      // First TD
+      if (title.includes('First Touchdown') || title.includes('First TD')) {
+        const match = title.match(/^(.+?):/);
+        return { main: match ? `${match[1]} (1st TD)` : title, sub: 'First TD' };
+      }
+
+      // Anytime TD
+      if (title.includes('Anytime TD') || title.includes('Anytime Touchdown')) {
+        const match = title.match(/^(.+?):/);
+        return { main: match ? `${match[1]} (Any TD)` : title, sub: 'Anytime TD' };
+      }
+
+      // Receiving yards
+      if (title.includes('receiving yards')) {
+        const match = title.match(/^(.+?): (\d+)\+ receiving/);
+        return { main: match ? `${match[1]} ${match[2]}+ yds` : title, sub: 'Receiving' };
+      }
+
+      // Rushing yards
+      if (title.includes('rushing yards')) {
+        const match = title.match(/^(.+?): (\d+)\+ rushing/);
+        return { main: match ? `${match[1]} ${match[2]}+ rush yds` : title, sub: 'Rushing' };
+      }
+
+      // Passing yards
+      if (title.includes('passing yards')) {
+        const match = title.match(/^(.+?): (\d+)\+ passing/);
+        return { main: match ? `${match[1]} ${match[2]}+ pass yds` : title, sub: 'Passing' };
+      }
+
+      return { main: title.substring(0, 40), sub: '' };
+    }
+
+    function createPropRow(market) {
+      const { main } = parseTitle(market.title);
+      const ticker = market.ticker;
+      const title = market.title;
+      const yesAsk = market.yes_ask || 0;
+      const noAsk = market.no_ask || 0;
+
+      // Escape quotes for onclick
+      const escapedTitle = title.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+      return `
+        <div class="prop-row">
+          <div class="prop-info">
+            <div class="prop-title">${main}</div>
+          </div>
+          <div class="prop-odds">
+            <button class="odds-btn yes" onclick="openOrderModal('${ticker}', '${escapedTitle}', 'yes', ${yesAsk})">
+              <span class="odds-label">Yes</span>
+              <span class="odds-price">${yesAsk}¢</span>
+            </button>
+            <button class="odds-btn no" onclick="openOrderModal('${ticker}', '${escapedTitle}', 'no', ${noAsk})">
+              <span class="odds-label">No</span>
+              <span class="odds-price">${noAsk}¢</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function chunkArray(arr, size) {
+      const chunks = [];
+      for (let i = 0; i < arr.length; i += size) {
+        chunks.push(arr.slice(i, i + size));
+      }
+      return chunks;
+    }
+
+    function extractPlayerName(title) {
+      // Extract player name from prop title
+      // Format: "Player Name: 50+ receiving yards" or "Player Name: First TD Scorer"
+      const colonMatch = title.match(/^([^:]+):/);
+      if (colonMatch) {
+        return colonMatch[1].trim();
+      }
+      return null;
+    }
+
+    function findManager(playerName) {
+      // Find which manager has this player on their roster
+      if (!playerName || typeof ROSTER_DATA === 'undefined') return null;
+
+      const rosters = ROSTER_DATA.rosters || {};
+      const normalizedSearch = playerName.toLowerCase();
+
+      for (const [manager, players] of Object.entries(rosters)) {
+        for (const player of players) {
+          // Check for exact match or partial match (for nicknames)
+          const normalizedPlayer = player.toLowerCase();
+          if (normalizedPlayer === normalizedSearch ||
+              normalizedPlayer.includes(normalizedSearch) ||
+              normalizedSearch.includes(normalizedPlayer)) {
+            return manager;
+          }
+        }
+      }
+      return null;
+    }
+
+    function renderManagerSection(manager, markets) {
+      const chunks = chunkArray(markets, 5);
+
+      return `
+        <div class="markets-section">
+          <div class="section-header">
+            <div class="section-title">${manager}</div>
+          </div>
+          <div class="props-container">
+            ${chunks.map(chunk => `
+              <div class="props-list">
+                ${chunk.map(m => createPropRow(m)).join('')}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMarkets() {
+      if (typeof WAGERS_DATA === 'undefined') {
+        console.error('Wagers data not loaded');
+        return;
+      }
+
+      // Balance
+      if (WAGERS_DATA.balance) {
+        document.getElementById('balanceValue').textContent = '$' + (WAGERS_DATA.balance / 100).toFixed(2);
+      }
+
+      // Collect all player props
+      const allProps = [
+        ...(WAGERS_DATA.first_td || []),
+        ...(WAGERS_DATA.anytime_td || []),
+        ...(WAGERS_DATA.receiving_yards || []),
+        ...(WAGERS_DATA.rushing_yards || []),
+        ...(WAGERS_DATA.passing_yards || [])
+      ];
+
+      // Group props by manager
+      const managerProps = {};
+
+      for (const market of allProps) {
+        const playerName = extractPlayerName(market.title);
+        const manager = findManager(playerName);
+
+        if (manager) {
+          if (!managerProps[manager]) {
+            managerProps[manager] = [];
+          }
+          managerProps[manager].push(market);
+        }
+      }
+
+      // Sort managers alphabetically
+      const sortedManagers = Object.keys(managerProps).sort();
+
+      // Render sections
+      const container = document.getElementById('managerSections');
+
+      if (sortedManagers.length === 0) {
+        container.innerHTML = '<div class="empty-message">No matching prop bets found for rostered players</div>';
+        return;
+      }
+
+      container.innerHTML = sortedManagers.map(manager =>
+        renderManagerSection(manager, managerProps[manager])
+      ).join('');
+    }
+
+    renderMarkets();
+
+    // API and auth state
+    // Start backend: python3 wagers_server.py
+    const API_BASE = 'http://localhost:5001/api';
+    let isAuthenticated = false;
+    let currentOrder = { ticker: '', side: '', price: 0 };
+
+    // Auth functions
+    function showLoginModal() {
+      document.getElementById('loginModal').classList.add('active');
+      showStep1();
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.remove('active');
+      document.getElementById('loginError').classList.remove('visible');
+      showStep1();
+    }
+
+    function showStep1() {
+      document.getElementById('setupStep1').style.display = 'block';
+      document.getElementById('setupStep2').style.display = 'none';
+    }
+
+    function showStep2() {
+      document.getElementById('setupStep1').style.display = 'none';
+      document.getElementById('setupStep2').style.display = 'block';
+      document.getElementById('apiKeyInput').focus();
+    }
+
+    async function login() {
+      const apiKey = document.getElementById('apiKeyInput').value.trim();
+      const privateKey = document.getElementById('privateKeyInput').value.trim();
+      const errorEl = document.getElementById('loginError');
+      const connectBtn = document.getElementById('connectBtn');
+
+      if (!apiKey) {
+        errorEl.textContent = 'Please paste your API Key ID from the downloaded file';
+        errorEl.classList.add('visible');
+        return;
+      }
+
+      if (!privateKey) {
+        errorEl.textContent = 'Please paste your Private Key (the long block starting with BEGIN)';
+        errorEl.classList.add('visible');
+        return;
+      }
+
+      if (!privateKey.includes('-----BEGIN') || !privateKey.includes('-----END')) {
+        errorEl.textContent = 'Make sure to copy the entire private key, including the BEGIN and END lines';
+        errorEl.classList.add('visible');
+        return;
+      }
+
+      connectBtn.disabled = true;
+      connectBtn.textContent = 'Connecting...';
+      errorEl.classList.remove('visible');
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            api_key: apiKey,
+            private_key: privateKey
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Login failed');
+        }
+
+        isAuthenticated = true;
+        updateAuthUI(true, result.balance);
+        closeLoginModal();
+        showToast('Connected to Kalshi!');
+
+        // Clear inputs
+        document.getElementById('apiKeyInput').value = '';
+        document.getElementById('privateKeyInput').value = '';
+
+      } catch (err) {
+        let message = err.message || 'Failed to connect';
+        if (message.includes('Authentication failed')) {
+          message = 'Connection failed. Double-check that you copied the full API Key ID and the entire Private Key (including BEGIN/END lines).';
+        }
+        errorEl.textContent = message;
+        errorEl.classList.add('visible');
+      } finally {
+        connectBtn.disabled = false;
+        connectBtn.textContent = 'Connect';
+      }
+    }
+
+    async function logout() {
+      try {
+        await fetch(`${API_BASE}/auth/logout`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
+
+      isAuthenticated = false;
+      updateAuthUI(false);
+      showToast('Disconnected from Kalshi');
+    }
+
+    function updateAuthUI(authenticated, balance = null) {
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const balanceValue = document.getElementById('balanceValue');
+
+      if (authenticated) {
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+        if (balance !== null) {
+          balanceValue.textContent = '$' + (balance / 100).toFixed(2);
+        }
+      } else {
+        loginBtn.style.display = 'block';
+        logoutBtn.style.display = 'none';
+        balanceValue.textContent = '$—';
+      }
+    }
+
+    // Check auth status with timeout to prevent page freeze
+    async function checkAuthStatus() {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 2000);
+
+        const response = await fetch(`${API_BASE}/auth/status`, {
+          credentials: 'include',
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+
+        const data = await response.json();
+        if (data.authenticated) {
+          isAuthenticated = true;
+          refreshBalance();
+          updateAuthUI(true);
+        }
+      } catch (err) {
+        // Server not running or timeout - stay in logged out state
+      }
+    }
+
+    // Check auth on page load (non-blocking)
+    checkAuthStatus();
+
+    function openOrderModal(ticker, title, side, price) {
+      currentOrder = { ticker, side, price };
+
+      document.getElementById('orderMarketTitle').textContent = title;
+      const sideLabel = document.getElementById('orderSideLabel');
+      sideLabel.textContent = side === 'yes' ? 'Buy Yes' : 'Buy No';
+      sideLabel.className = 'order-side ' + side;
+
+      document.getElementById('orderCount').value = 1;
+      document.getElementById('orderPrice').value = price;
+      document.getElementById('orderError').classList.remove('visible');
+
+      updateOrderSummary();
+
+      document.getElementById('orderModal').classList.add('active');
+    }
+
+    function closeOrderModal() {
+      document.getElementById('orderModal').classList.remove('active');
+    }
+
+    function adjustCount(delta) {
+      const input = document.getElementById('orderCount');
+      const newVal = Math.max(1, Math.min(100, parseInt(input.value) + delta));
+      input.value = newVal;
+      updateOrderSummary();
+    }
+
+    function updateOrderSummary() {
+      const count = parseInt(document.getElementById('orderCount').value) || 1;
+      const price = parseInt(document.getElementById('orderPrice').value) || 0;
+
+      const cost = (count * price) / 100;
+      const payout = count; // Each contract pays $1 if it wins
+
+      document.getElementById('orderCost').textContent = '$' + cost.toFixed(2);
+      document.getElementById('orderPayout').textContent = '$' + payout.toFixed(2);
+    }
+
+    // Add event listeners for inputs
+    document.getElementById('orderCount').addEventListener('input', updateOrderSummary);
+    document.getElementById('orderPrice').addEventListener('input', updateOrderSummary);
+
+    // Close modal on overlay click
+    document.getElementById('orderModal').addEventListener('click', (e) => {
+      if (e.target.id === 'orderModal') closeOrderModal();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeOrderModal();
+    });
+
+    async function submitOrder() {
+      const count = parseInt(document.getElementById('orderCount').value);
+      const price = parseInt(document.getElementById('orderPrice').value);
+      const errorEl = document.getElementById('orderError');
+      const submitBtn = document.getElementById('submitOrderBtn');
+
+      if (!count || count < 1) {
+        errorEl.textContent = 'Please enter a valid quantity';
+        errorEl.classList.add('visible');
+        return;
+      }
+
+      if (!price || price < 1 || price > 99) {
+        errorEl.textContent = 'Price must be between 1 and 99 cents';
+        errorEl.classList.add('visible');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Placing...';
+      errorEl.classList.remove('visible');
+
+      try {
+        const response = await fetch(`${API_BASE}/order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            ticker: currentOrder.ticker,
+            side: currentOrder.side,
+            count: count,
+            price: price
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            isAuthenticated = false;
+            updateAuthUI(false);
+            closeOrderModal();
+            showLoginModal();
+            return;
+          }
+          throw new Error(result.error || 'Order failed');
+        }
+
+        // Success - close modal and refresh balance
+        closeOrderModal();
+        refreshBalance();
+        showToast('Order placed successfully!');
+
+      } catch (err) {
+        errorEl.textContent = err.message || 'Failed to place order';
+        errorEl.classList.add('visible');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Place Order';
+      }
+    }
+
+    async function refreshBalance() {
+      try {
+        const response = await fetch(`${API_BASE}/balance`, {
+          credentials: 'include'
+        });
+        const data = await response.json();
+        if (data.balance !== undefined) {
+          document.getElementById('balanceValue').textContent = '$' + (data.balance / 100).toFixed(2);
+        }
+      } catch (err) {
+        console.error('Failed to refresh balance:', err);
+      }
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+
+      toastMessage.textContent = message;
+      toast.classList.toggle('error', isError);
+      toast.classList.add('visible');
+
+      setTimeout(() => {
+        toast.classList.remove('visible');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
