@@ -34,6 +34,7 @@ DEMO_BASE_URL = "https://demo-api.kalshi.co"
 # API configuration from environment
 KALSHI_API_KEY_ID = os.getenv("KALSHI_API_KEY_ID")
 KALSHI_PRIVATE_KEY_PATH = os.getenv("KALSHI_PRIVATE_KEY_PATH")
+KALSHI_PRIVATE_KEY = os.getenv("KALSHI_PRIVATE_KEY")  # PEM contents directly
 KALSHI_USE_DEMO = os.getenv("KALSHI_USE_DEMO", "true").lower() == "true"
 
 
@@ -45,7 +46,8 @@ class KalshiAPI:
     Trading endpoints require API key + private key for RSA signature.
     """
 
-    def __init__(self, use_demo: bool = None, api_key_id: str = None, private_key_path: str = None):
+    def __init__(self, use_demo: bool = None, api_key_id: str = None,
+                 private_key_path: str = None, private_key_pem: str = None):
         """
         Initialize Kalshi API client.
 
@@ -53,6 +55,7 @@ class KalshiAPI:
             use_demo: Use demo environment (default: True, reads from KALSHI_USE_DEMO env)
             api_key_id: API key ID (reads from KALSHI_API_KEY_ID env if not provided)
             private_key_path: Path to private key file (reads from KALSHI_PRIVATE_KEY_PATH env)
+            private_key_pem: PEM key contents directly (reads from KALSHI_PRIVATE_KEY env)
         """
         self.use_demo = use_demo if use_demo is not None else KALSHI_USE_DEMO
         self.base_url = DEMO_BASE_URL if self.use_demo else PROD_BASE_URL
@@ -60,7 +63,11 @@ class KalshiAPI:
         self.private_key_path = private_key_path or KALSHI_PRIVATE_KEY_PATH
         self.private_key = None
 
-        if self.private_key_path and HAS_CRYPTO:
+        # Load key from PEM string (env var or direct), or from file path
+        pem_content = private_key_pem or KALSHI_PRIVATE_KEY
+        if pem_content and HAS_CRYPTO:
+            self._load_private_key_from_pem(pem_content)
+        elif self.private_key_path and HAS_CRYPTO:
             self._load_private_key()
 
     def _load_private_key(self):
@@ -74,6 +81,13 @@ class KalshiAPI:
             print(f"Loaded private key from {self.private_key_path}")
         else:
             print(f"Warning: Private key file not found: {self.private_key_path}")
+
+    def _load_private_key_from_pem(self, pem_content: str):
+        """Load RSA private key from PEM string."""
+        self.private_key = serialization.load_pem_private_key(
+            pem_content.encode('utf-8'), password=None, backend=default_backend()
+        )
+        print("Loaded private key from environment variable")
 
     def _create_signature(self, timestamp: str, method: str, path: str) -> str:
         """

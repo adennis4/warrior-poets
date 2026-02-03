@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: warrior-poets-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wagers_server:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: KALSHI_API_KEY_ID
+        sync: false
+      - key: KALSHI_PRIVATE_KEY
+        sync: false
+      - key: KALSHI_USE_DEMO
+        value: "false"

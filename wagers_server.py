@@ -13,25 +13,27 @@ from kalshi_api import KalshiAPI, get_nfl_props
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
-CORS(app, supports_credentials=True)  # Allow requests with cookies
+
+# Allow requests from GitHub Pages and localhost
+ALLOWED_ORIGINS = [
+    'https://adennis4.github.io',
+    'http://localhost:8000',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
+    'http://localhost:3000',
+]
+CORS(app, supports_credentials=True, origins=ALLOWED_ORIGINS)
 
 
 def get_user_api():
     """Get KalshiAPI instance for the current session user, or fall back to .env credentials."""
     if 'kalshi_api_key' in session and 'kalshi_private_key' in session:
         # Session-based credentials (logged in via modal)
-        temp_key_file = tempfile.NamedTemporaryFile(mode='w', suffix='.pem', delete=False)
-        temp_key_file.write(session['kalshi_private_key'])
-        temp_key_file.close()
-
-        try:
-            return KalshiAPI(
-                use_demo=False,
-                api_key_id=session['kalshi_api_key'],
-                private_key_path=temp_key_file.name
-            )
-        finally:
-            os.unlink(temp_key_file.name)
+        return KalshiAPI(
+            use_demo=False,
+            api_key_id=session['kalshi_api_key'],
+            private_key_pem=session['kalshi_private_key']
+        )
 
     # Fall back to .env credentials if available
     if default_api:
@@ -233,17 +235,10 @@ def cancel_order(order_id):
 
 
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5001))
+    debug = os.environ.get('FLASK_ENV') != 'production'
+
     print("Starting Kalshi Wagers API server...")
-    print("Multi-user mode: Users authenticate with their own Kalshi credentials")
-    print("\nEndpoints:")
-    print("  POST /api/auth/login  - Login with Kalshi API key + private key")
-    print("  POST /api/auth/logout - Logout")
-    print("  GET  /api/auth/status - Check authentication status")
-    print("  GET  /api/balance     - Get account balance")
-    print("  GET  /api/markets     - Get NFL prop markets")
-    print("  GET  /api/positions   - Get current positions")
-    print("  GET  /api/orders      - Get open orders")
-    print("  POST /api/order       - Place an order")
-    print("  DEL  /api/order/:id   - Cancel an order")
-    print("\nServer running on http://localhost:5001")
-    app.run(port=5001, debug=True)
+    print(f"Mode: {'production' if not debug else 'development'}")
+    print(f"\nServer running on http://localhost:{port}")
+    app.run(host='0.0.0.0', port=port, debug=debug)

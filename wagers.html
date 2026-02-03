@@ -984,8 +984,10 @@ Paste the entire key here
     renderMarkets();
 
     // API and auth state
-    // Start backend: python3 wagers_server.py
-    const API_BASE = 'http://localhost:5001/api';
+    // Auto-detect: use Render in production, localhost in development
+    const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5001/api'
+      : 'https://warrior-poets-api.onrender.com/api';
     let isAuthenticated = false;
     let currentOrder = { ticker: '', side: '', price: 0 };
 
