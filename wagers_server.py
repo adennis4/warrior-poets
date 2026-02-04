@@ -26,31 +26,15 @@ CORS(app, supports_credentials=True, origins=ALLOWED_ORIGINS)
 
 
 def get_user_api():
-    """Get KalshiAPI instance for the current session user, or fall back to .env credentials."""
+    """Get KalshiAPI instance for the current session user."""
     if 'kalshi_api_key' in session and 'kalshi_private_key' in session:
-        # Session-based credentials (logged in via modal)
         return KalshiAPI(
             use_demo=False,
             api_key_id=session['kalshi_api_key'],
             private_key_pem=session['kalshi_private_key']
         )
 
-    # Fall back to .env credentials if available
-    if default_api:
-        return default_api
-
     return None
-
-
-# Initialize default API client from .env (if credentials are configured)
-default_api = None
-try:
-    _api = KalshiAPI(use_demo=False)
-    if _api.private_key and _api.api_key_id:
-        default_api = _api
-        print(f"Default credentials loaded from .env")
-except Exception:
-    pass
 
 
 @app.route('/api/auth/login', methods=['POST'])
@@ -106,7 +90,7 @@ def logout():
 @app.route('/api/auth/status', methods=['GET'])
 def auth_status():
     """Check if user is authenticated."""
-    is_authenticated = ('kalshi_api_key' in session and 'kalshi_private_key' in session) or default_api is not None
+    is_authenticated = 'kalshi_api_key' in session and 'kalshi_private_key' in session
     return jsonify({'authenticated': is_authenticated})
 
 
