@@ -20,18 +20,20 @@ def get_encryption_key() -> bytes:
     return bytes.fromhex(ENCRYPTION_KEY)
 
 
-def encrypt_credential(plaintext: str) -> tuple[str, str]:
+def encrypt_credential(plaintext: str, iv: bytes = None) -> tuple[str, str]:
     """
     Encrypt a credential string.
 
     Args:
         plaintext: The credential to encrypt (API key or private key)
+        iv: Optional IV to use (if None, generates a new one)
 
     Returns:
         Tuple of (ciphertext_base64, iv_base64)
     """
     key = get_encryption_key()
-    iv = os.urandom(16)  # Unique IV for each encryption
+    if iv is None:
+        iv = os.urandom(16)
     cipher = AES.new(key, AES.MODE_CBC, iv)
     ciphertext = cipher.encrypt(pad(plaintext.encode('utf-8'), AES.block_size))
     return (

@@ -179,9 +179,12 @@ def delete_session(session_token: str):
 
 def save_kalshi_credentials(user_id: int, api_key: str, private_key: str):
     """Encrypt and save Kalshi credentials for a user."""
-    # Encrypt both credentials with the same IV (they're stored together)
-    encrypted_api_key, iv = encrypt_credential(api_key)
-    encrypted_private_key, _ = encrypt_credential(private_key)
+    import os
+    import base64
+    # Generate one IV and use it for both credentials
+    iv = os.urandom(16)
+    encrypted_api_key, iv_b64 = encrypt_credential(api_key, iv)
+    encrypted_private_key, _ = encrypt_credential(private_key, iv)
 
     with get_db() as db:
         # Delete existing credentials if any
@@ -192,7 +195,7 @@ def save_kalshi_credentials(user_id: int, api_key: str, private_key: str):
             user_id=user_id,
             encrypted_api_key=encrypted_api_key,
             encrypted_private_key=encrypted_private_key,
-            encryption_iv=iv
+            encryption_iv=iv_b64
         )
         db.add(creds)
         db.commit()

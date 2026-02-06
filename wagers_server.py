@@ -67,11 +67,17 @@ def get_yahoo_auth_header():
 
 @app.before_request
 def load_user():
-    """Load user from session cookie before each request."""
+    """Load user from session token (header or cookie)."""
     g.user = None
     g.kalshi_api = None
 
-    session_token = request.cookies.get(COOKIE_NAME)
+    # Check Authorization header first, then cookie
+    auth_header = request.headers.get('Authorization', '')
+    if auth_header.startswith('Bearer '):
+        session_token = auth_header[7:]
+    else:
+        session_token = request.cookies.get(COOKIE_NAME)
+
     if session_token:
         user = get_user_by_session(session_token)
         if user:
@@ -193,17 +199,9 @@ def yahoo_callback():
         # Create session
         session_token = create_session(user.id)
 
-        # Redirect to frontend with session cookie
-        response = make_response(redirect(f"{FRONTEND_URL}/wagers.html?login=success"))
-        response.set_cookie(
-            COOKIE_NAME,
-            value=session_token,
-            max_age=COOKIE_MAX_AGE,
-            httponly=True,
-            secure=True,
-            samesite='None'
-        )
-        return response
+        # Redirect to frontend with session token in URL
+        # Frontend will store in localStorage for subsequent requests
+        return redirect(f"{FRONTEND_URL}/wagers.html?login=success&token={session_token}")
 
     except Exception as e:
         print(f"Yahoo OAuth error: {e}")

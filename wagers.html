@@ -1071,8 +1071,7 @@ Paste the entire key here
       try {
         const response = await fetch(`${API_BASE}/kalshi/link`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({
             api_key: apiKey,
             private_key: privateKey
@@ -1112,12 +1111,13 @@ Paste the entire key here
       try {
         await fetch(`${API_BASE}/auth/logout`, {
           method: 'POST',
-          credentials: 'include'
+          headers: getAuthHeaders()
         });
       } catch (err) {
         console.error('Logout error:', err);
       }
 
+      clearSessionToken();
       currentUser = null;
       hasKalshi = false;
       updateAuthUI();
@@ -1159,21 +1159,52 @@ Paste the entire key here
       }
     }
 
+    // Session token storage
+    const TOKEN_KEY = 'wp_session_token';
+
+    function getSessionToken() {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+
+    function setSessionToken(token) {
+      localStorage.setItem(TOKEN_KEY, token);
+    }
+
+    function clearSessionToken() {
+      localStorage.removeItem(TOKEN_KEY);
+    }
+
+    function getAuthHeaders() {
+      const token = getSessionToken();
+      if (token) {
+        return { 'Authorization': `Bearer ${token}` };
+      }
+      return {};
+    }
+
     // Check auth status on page load
     async function checkSession() {
       // Handle OAuth callback params
       const urlParams = new URLSearchParams(window.location.search);
       const loginStatus = urlParams.get('login');
+      const token = urlParams.get('token');
       const error = urlParams.get('error');
 
       if (error) {
         showToast('Login failed: ' + error, true);
-        // Clean up URL
         window.history.replaceState({}, document.title, window.location.pathname);
-      } else if (loginStatus === 'success') {
+      } else if (loginStatus === 'success' && token) {
+        // Store the token from OAuth callback
+        setSessionToken(token);
         showToast('Logged in successfully!');
-        // Clean up URL
         window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Check if we have a valid session
+      const sessionToken = getSessionToken();
+      if (!sessionToken) {
+        updateAuthUI();
+        return;
       }
 
       try {
@@ -1181,7 +1212,7 @@ Paste the entire key here
         const timeout = setTimeout(() => controller.abort(), 3000);
 
         const response = await fetch(`${API_BASE}/auth/user`, {
-          credentials: 'include',
+          headers: getAuthHeaders(),
           signal: controller.signal
         });
         clearTimeout(timeout);
@@ -1202,6 +1233,8 @@ Paste the entire key here
             showLinkKalshiModal();
           }
         } else {
+          // Token invalid, clear it
+          clearSessionToken();
           updateAuthUI();
         }
       } catch (err) {
@@ -1297,8 +1330,7 @@ Paste the entire key here
       try {
         const response = await fetch(`${API_BASE}/order`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({
             ticker: currentOrder.ticker,
             side: currentOrder.side,
@@ -1343,7 +1375,7 @@ Paste the entire key here
     async function refreshBalance() {
       try {
         const response = await fetch(`${API_BASE}/balance`, {
-          credentials: 'include'
+          headers: getAuthHeaders()
         });
         const data = await response.json();
         if (data.balance !== undefined) {
