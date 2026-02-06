@@ -280,9 +280,6 @@
             <button class="kalshi-link" id="linkKalshiBtn" onclick="showLinkKalshiModal()" style="display: none;">
               Link Kalshi Account
             </button>
-            <button class="kalshi-link logout-btn" id="logoutBtn" onclick="logout()" style="display: none;">
-              Logout
-            </button>
           </div>
         </div>
 
@@ -682,6 +679,7 @@ Paste the entire key here
 
     .yahoo-login {
       background: #6001d2;
+      cursor: pointer;
     }
 
     .yahoo-login:hover {
@@ -1127,7 +1125,6 @@ Paste the entire key here
     function updateAuthUI() {
       const yahooLoginBtn = document.getElementById('yahooLoginBtn');
       const linkKalshiBtn = document.getElementById('linkKalshiBtn');
-      const logoutBtn = document.getElementById('logoutBtn');
       const userInfo = document.getElementById('userInfo');
       const notLoggedIn = document.getElementById('notLoggedIn');
       const userName = document.getElementById('userName');
@@ -1136,7 +1133,6 @@ Paste the entire key here
       if (currentUser) {
         // Logged in with Yahoo
         yahooLoginBtn.style.display = 'none';
-        logoutBtn.style.display = 'block';
         userInfo.style.display = 'block';
         notLoggedIn.style.display = 'none';
         userName.textContent = currentUser.name || 'User';
@@ -1153,7 +1149,6 @@ Paste the entire key here
         // Not logged in
         yahooLoginBtn.style.display = 'block';
         linkKalshiBtn.style.display = 'none';
-        logoutBtn.style.display = 'none';
         userInfo.style.display = 'none';
         notLoggedIn.style.display = 'block';
       }
