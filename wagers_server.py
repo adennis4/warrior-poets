@@ -429,17 +429,17 @@ def init_db_command():
     print('Database initialized.')
 
 
+# Initialize database tables on startup
+try:
+    init_db()
+    print("Database tables initialized.")
+except Exception as e:
+    print(f"Database init error: {e}")
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
     debug = os.environ.get('FLASK_ENV') != 'production'
-
-    # Initialize database tables in development
-    if debug:
-        try:
-            init_db()
-            print("Database tables initialized.")
-        except Exception as e:
-            print(f"Database init skipped: {e}")
 
     print("Starting Kalshi Wagers API server...")
     print(f"Mode: {'production' if not debug else 'development'}")
