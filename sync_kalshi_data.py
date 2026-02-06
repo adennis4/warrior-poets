@@ -15,14 +15,7 @@ def sync_wagers_data():
 
     api = KalshiAPI(use_demo=False)
 
-    # Get balance
-    balance = None
-    try:
-        balance_data = api.get_balance()
-        balance = balance_data.get('balance', 0)
-        print(f"  Balance: ${balance/100:.2f}")
-    except Exception as e:
-        print(f"  Could not fetch balance: {e}")
+    # Note: Balance is fetched per-user at runtime, not stored in static data
 
     # Fetch NFL Super Bowl winner markets
     print("  Fetching Super Bowl winner markets...")
@@ -41,7 +34,6 @@ def sync_wagers_data():
 
     # Build data object
     data = {
-        'balance': balance,
         'championship': nfl_champ_active,
         'spread': props.get('spread', [])[:10],
         'total': props.get('total', [])[:10],

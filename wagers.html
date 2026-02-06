@@ -936,10 +936,8 @@ Paste the entire key here
         return;
       }
 
-      // Balance
-      if (WAGERS_DATA.balance) {
-        document.getElementById('balanceValue').textContent = '$' + (WAGERS_DATA.balance / 100).toFixed(2);
-      }
+      // Balance is only shown when authenticated (via checkAuthStatus)
+      // Don't use static WAGERS_DATA.balance
 
       // Collect all player props
       const allProps = [
