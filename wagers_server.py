@@ -121,7 +121,6 @@ def yahoo_auth():
         f"?client_id={YAHOO_CLIENT_ID}"
         f"&redirect_uri={urllib.parse.quote(YAHOO_REDIRECT_URI)}"
         f"&response_type=code"
-        f"&scope=openid"
     )
     return redirect(auth_url)
 
@@ -158,19 +157,32 @@ def yahoo_callback():
         tokens = token_response.json()
         access_token = tokens.get('access_token')
 
-        # Get user info from Yahoo
-        user_response = requests.get(
-            "https://api.login.yahoo.com/openid/v1/userinfo",
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
+        # Yahoo returns the GUID in the token response
+        yahoo_guid = tokens.get('xoauth_yahoo_guid')
 
-        if user_response.status_code != 200:
-            return redirect(f"{FRONTEND_URL}/wagers.html?error=user_info_failed")
+        # If not in token response, fetch from Yahoo Social API
+        if not yahoo_guid:
+            guid_response = requests.get(
+                "https://social.yahooapis.com/v1/me/guid?format=json",
+                headers={"Authorization": f"Bearer {access_token}"}
+            )
+            if guid_response.status_code == 200:
+                guid_data = guid_response.json()
+                yahoo_guid = guid_data.get('guid', {}).get('value')
 
-        user_info = user_response.json()
-        yahoo_guid = user_info.get('sub')
-        yahoo_email = user_info.get('email')
-        yahoo_name = user_info.get('name') or user_info.get('nickname') or yahoo_email
+        # Get user profile from Yahoo Social API
+        yahoo_email = None
+        yahoo_name = None
+        if yahoo_guid:
+            profile_response = requests.get(
+                f"https://social.yahooapis.com/v1/user/{yahoo_guid}/profile?format=json",
+                headers={"Authorization": f"Bearer {access_token}"}
+            )
+            if profile_response.status_code == 200:
+                profile_data = profile_response.json()
+                profile = profile_data.get('profile', {})
+                yahoo_name = profile.get('nickname') or profile.get('givenName')
+                yahoo_email = profile.get('emails', [{}])[0].get('handle') if profile.get('emails') else None
 
         if not yahoo_guid:
             return redirect(f"{FRONTEND_URL}/wagers.html?error=no_user_id")
