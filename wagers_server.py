@@ -180,15 +180,27 @@ def yahoo_callback():
         yahoo_email = None
         yahoo_name = None
         if yahoo_guid:
-            profile_response = requests.get(
-                f"https://social.yahooapis.com/v1/user/{yahoo_guid}/profile?format=json",
-                headers={"Authorization": f"Bearer {access_token}"}
-            )
-            if profile_response.status_code == 200:
-                profile_data = profile_response.json()
-                profile = profile_data.get('profile', {})
-                yahoo_name = profile.get('nickname') or profile.get('givenName')
-                yahoo_email = profile.get('emails', [{}])[0].get('handle') if profile.get('emails') else None
+            try:
+                profile_response = requests.get(
+                    f"https://social.yahooapis.com/v1/user/{yahoo_guid}/profile?format=json",
+                    headers={"Authorization": f"Bearer {access_token}"}
+                )
+                print(f"Yahoo profile response: {profile_response.status_code}")
+                if profile_response.status_code == 200:
+                    profile_data = profile_response.json()
+                    print(f"Yahoo profile data: {profile_data}")
+                    profile = profile_data.get('profile', {})
+                    yahoo_name = (
+                        profile.get('nickname') or
+                        profile.get('givenName') or
+                        profile.get('familyName') or
+                        f"{profile.get('givenName', '')} {profile.get('familyName', '')}".strip()
+                    )
+                    emails = profile.get('emails')
+                    if emails and isinstance(emails, list) and len(emails) > 0:
+                        yahoo_email = emails[0].get('handle')
+            except Exception as e:
+                print(f"Error fetching Yahoo profile: {e}")
 
         if not yahoo_guid:
             return redirect(f"{FRONTEND_URL}/wagers.html?error=no_user_id")
