@@ -211,9 +211,16 @@ def get_kalshi_credentials(user_id: int) -> tuple[str, str] | None:
         if not creds:
             return None
 
-        api_key = decrypt_credential(creds.encrypted_api_key, creds.encryption_iv)
-        private_key = decrypt_credential(creds.encrypted_private_key, creds.encryption_iv)
-        return api_key, private_key
+        try:
+            api_key = decrypt_credential(creds.encrypted_api_key, creds.encryption_iv)
+            private_key = decrypt_credential(creds.encrypted_private_key, creds.encryption_iv)
+            return api_key, private_key
+        except Exception as e:
+            # Credentials are corrupted, delete them
+            print(f"Credential decryption failed for user {user_id}, deleting: {e}")
+            db.delete(creds)
+            db.commit()
+            return None
 
 
 def delete_kalshi_credentials(user_id: int):
