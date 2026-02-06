@@ -17,9 +17,11 @@ from encryption import encrypt_credential, decrypt_credential
 
 DATABASE_URL = os.environ.get('DATABASE_URL', '')
 
-# Handle Render's postgres:// vs postgresql:// URL format
+# Handle Render's postgres:// URL format and use psycopg3 driver
 if DATABASE_URL.startswith('postgres://'):
-    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql+psycopg://', 1)
+elif DATABASE_URL.startswith('postgresql://'):
+    DATABASE_URL = DATABASE_URL.replace('postgresql://', 'postgresql+psycopg://', 1)
 
 Base = declarative_base()
 
