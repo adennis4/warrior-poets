@@ -1,18 +1,47 @@
 #!/usr/bin/env python3
 """
 Backend server for placing Kalshi wagers.
-Supports multi-user authentication - each user connects their own Kalshi account.
+Supports multi-user authentication via Yahoo OAuth.
+Users link their Kalshi accounts after logging in with Yahoo.
 Run with: python3 wagers_server.py
 """
 
 import os
-import tempfile
-from flask import Flask, jsonify, request, session
+import base64
+import urllib.parse
+from functools import wraps
+
+import requests
+from flask import Flask, jsonify, request, redirect, g, make_response
 from flask_cors import CORS
+from dotenv import load_dotenv
+
 from kalshi_api import KalshiAPI, get_nfl_props
+from database import (
+    init_db,
+    get_or_create_user,
+    create_session,
+    get_user_by_session,
+    delete_session,
+    save_kalshi_credentials,
+    get_kalshi_credentials,
+    delete_kalshi_credentials,
+    user_has_kalshi_credentials,
+)
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
+
+# Yahoo OAuth configuration
+YAHOO_CLIENT_ID = os.environ.get('YAHOO_CLIENT_ID', '')
+YAHOO_CLIENT_SECRET = os.environ.get('YAHOO_CLIENT_SECRET', '')
+YAHOO_REDIRECT_URI = os.environ.get(
+    'YAHOO_REDIRECT_URI',
+    'http://localhost:5001/api/auth/yahoo/callback'
+)
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:8000')
 
 # Allow requests from GitHub Pages and localhost
 ALLOWED_ORIGINS = [
@@ -24,30 +53,197 @@ ALLOWED_ORIGINS = [
 ]
 CORS(app, supports_credentials=True, origins=ALLOWED_ORIGINS)
 
+# Cookie settings
+COOKIE_NAME = 'wp_session'
+COOKIE_MAX_AGE = 30 * 24 * 60 * 60  # 30 days
 
-def get_user_api():
-    """Get KalshiAPI instance for the current session user."""
-    if 'kalshi_api_key' in session and 'kalshi_private_key' in session:
-        return KalshiAPI(
-            use_demo=False,
-            api_key_id=session['kalshi_api_key'],
-            private_key_pem=session['kalshi_private_key']
+
+def get_yahoo_auth_header():
+    """Get Basic auth header for Yahoo token requests."""
+    credentials = f"{YAHOO_CLIENT_ID}:{YAHOO_CLIENT_SECRET}"
+    encoded = base64.b64encode(credentials.encode()).decode()
+    return f"Basic {encoded}"
+
+
+@app.before_request
+def load_user():
+    """Load user from session cookie before each request."""
+    g.user = None
+    g.kalshi_api = None
+
+    session_token = request.cookies.get(COOKIE_NAME)
+    if session_token:
+        user = get_user_by_session(session_token)
+        if user:
+            g.user = user
+            # Load Kalshi API if user has linked credentials
+            creds = get_kalshi_credentials(user.id)
+            if creds:
+                api_key, private_key = creds
+                g.kalshi_api = KalshiAPI(
+                    use_demo=False,
+                    api_key_id=api_key,
+                    private_key_pem=private_key
+                )
+
+
+def require_auth(f):
+    """Decorator to require Yahoo authentication."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not g.user:
+            return jsonify({'error': 'Not authenticated'}), 401
+        return f(*args, **kwargs)
+    return decorated
+
+
+def require_kalshi(f):
+    """Decorator to require Kalshi credentials."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not g.user:
+            return jsonify({'error': 'Not authenticated'}), 401
+        if not g.kalshi_api:
+            return jsonify({'error': 'Kalshi account not linked'}), 403
+        return f(*args, **kwargs)
+    return decorated
+
+
+# ============================================================================
+# Yahoo OAuth Endpoints
+# ============================================================================
+
+@app.route('/api/auth/yahoo')
+def yahoo_auth():
+    """Initiate Yahoo OAuth flow - redirects to Yahoo."""
+    auth_url = (
+        f"https://api.login.yahoo.com/oauth2/request_auth"
+        f"?client_id={YAHOO_CLIENT_ID}"
+        f"&redirect_uri={urllib.parse.quote(YAHOO_REDIRECT_URI)}"
+        f"&response_type=code"
+        f"&scope=openid"
+    )
+    return redirect(auth_url)
+
+
+@app.route('/api/auth/yahoo/callback')
+def yahoo_callback():
+    """Handle Yahoo OAuth callback."""
+    error = request.args.get('error')
+    if error:
+        return redirect(f"{FRONTEND_URL}/wagers.html?error={error}")
+
+    code = request.args.get('code')
+    if not code:
+        return redirect(f"{FRONTEND_URL}/wagers.html?error=no_code")
+
+    # Exchange code for tokens
+    try:
+        token_response = requests.post(
+            "https://api.login.yahoo.com/oauth2/get_token",
+            headers={
+                "Authorization": get_yahoo_auth_header(),
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data={
+                "grant_type": "authorization_code",
+                "code": code,
+                "redirect_uri": YAHOO_REDIRECT_URI
+            }
         )
 
-    return None
+        if token_response.status_code != 200:
+            return redirect(f"{FRONTEND_URL}/wagers.html?error=token_exchange_failed")
+
+        tokens = token_response.json()
+        access_token = tokens.get('access_token')
+
+        # Get user info from Yahoo
+        user_response = requests.get(
+            "https://api.login.yahoo.com/openid/v1/userinfo",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
+
+        if user_response.status_code != 200:
+            return redirect(f"{FRONTEND_URL}/wagers.html?error=user_info_failed")
+
+        user_info = user_response.json()
+        yahoo_guid = user_info.get('sub')
+        yahoo_email = user_info.get('email')
+        yahoo_name = user_info.get('name') or user_info.get('nickname') or yahoo_email
+
+        if not yahoo_guid:
+            return redirect(f"{FRONTEND_URL}/wagers.html?error=no_user_id")
+
+        # Create or get user
+        user = get_or_create_user(yahoo_guid, yahoo_email, yahoo_name)
+
+        # Create session
+        session_token = create_session(user.id)
+
+        # Redirect to frontend with session cookie
+        response = make_response(redirect(f"{FRONTEND_URL}/wagers.html?login=success"))
+        response.set_cookie(
+            COOKIE_NAME,
+            value=session_token,
+            max_age=COOKIE_MAX_AGE,
+            httponly=True,
+            secure=True,
+            samesite='None'
+        )
+        return response
+
+    except Exception as e:
+        print(f"Yahoo OAuth error: {e}")
+        return redirect(f"{FRONTEND_URL}/wagers.html?error=oauth_error")
 
 
-@app.route('/api/auth/login', methods=['POST'])
-def login():
-    """
-    Authenticate with Kalshi credentials.
+@app.route('/api/auth/user', methods=['GET'])
+def get_user():
+    """Get current user info and Kalshi connection status."""
+    if not g.user:
+        return jsonify({'authenticated': False}), 200
 
-    POST body:
-    {
-        "api_key": "your-kalshi-api-key-id",
-        "private_key": "-----BEGIN RSA PRIVATE KEY-----\n..."
+    has_kalshi = user_has_kalshi_credentials(g.user.id)
+
+    result = {
+        'authenticated': True,
+        'name': g.user.yahoo_name or g.user.yahoo_email or 'User',
+        'email': g.user.yahoo_email,
+        'has_kalshi': has_kalshi,
     }
-    """
+
+    # Include Kalshi balance if connected
+    if has_kalshi and g.kalshi_api:
+        try:
+            balance_data = g.kalshi_api.get_balance()
+            result['kalshi_balance'] = balance_data.get('balance', 0)
+        except Exception as e:
+            result['kalshi_error'] = str(e)
+
+    return jsonify(result)
+
+
+@app.route('/api/auth/logout', methods=['POST'])
+def logout():
+    """Clear session and logout."""
+    session_token = request.cookies.get(COOKIE_NAME)
+    if session_token:
+        delete_session(session_token)
+
+    response = make_response(jsonify({'success': True}))
+    response.delete_cookie(COOKIE_NAME, samesite='None', secure=True)
+    return response
+
+
+# ============================================================================
+# Kalshi Credential Linking Endpoints
+# ============================================================================
+
+@app.route('/api/kalshi/link', methods=['POST'])
+@require_auth
+def link_kalshi():
+    """Link Kalshi API credentials to user account."""
     try:
         data = request.json
         api_key = data.get('api_key')
@@ -56,16 +252,19 @@ def login():
         if not api_key or not private_key:
             return jsonify({'error': 'Missing api_key or private_key'}), 400
 
-        # Store in session
-        session['kalshi_api_key'] = api_key
-        session['kalshi_private_key'] = private_key
+        # Verify credentials by testing them
+        try:
+            test_api = KalshiAPI(
+                use_demo=False,
+                api_key_id=api_key,
+                private_key_pem=private_key
+            )
+            balance_data = test_api.get_balance()
+        except Exception as e:
+            return jsonify({'error': f'Invalid Kalshi credentials: {str(e)}'}), 400
 
-        # Verify credentials by fetching balance
-        api = get_user_api()
-        if not api:
-            return jsonify({'error': 'Failed to initialize API'}), 500
-
-        balance_data = api.get_balance()
+        # Save encrypted credentials
+        save_kalshi_credentials(g.user.id, api_key, private_key)
 
         return jsonify({
             'success': True,
@@ -73,70 +272,59 @@ def login():
         })
 
     except Exception as e:
-        # Clear session on failed login
-        session.pop('kalshi_api_key', None)
-        session.pop('kalshi_private_key', None)
-        return jsonify({'error': f'Authentication failed: {str(e)}'}), 401
+        return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/auth/logout', methods=['POST'])
-def logout():
-    """Clear session credentials."""
-    session.pop('kalshi_api_key', None)
-    session.pop('kalshi_private_key', None)
-    return jsonify({'success': True})
+@app.route('/api/kalshi/unlink', methods=['POST'])
+@require_auth
+def unlink_kalshi():
+    """Remove Kalshi credentials from user account."""
+    try:
+        delete_kalshi_credentials(g.user.id)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/auth/status', methods=['GET'])
-def auth_status():
-    """Check if user is authenticated."""
-    is_authenticated = 'kalshi_api_key' in session and 'kalshi_private_key' in session
-    return jsonify({'authenticated': is_authenticated})
-
+# ============================================================================
+# Kalshi Trading Endpoints (require Kalshi credentials)
+# ============================================================================
 
 @app.route('/api/balance', methods=['GET'])
+@require_kalshi
 def get_balance():
-    """Get account balance."""
+    """Get Kalshi account balance."""
     try:
-        api = get_user_api()
-        if not api:
-            return jsonify({'error': 'Not authenticated'}), 401
-
-        data = api.get_balance()
+        data = g.kalshi_api.get_balance()
         return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/markets', methods=['GET'])
+@require_kalshi
 def get_markets():
     """Get NFL prop markets."""
     try:
-        api = get_user_api()
-        if not api:
-            return jsonify({'error': 'Not authenticated'}), 401
-
-        props = get_nfl_props(api)
+        props = get_nfl_props(g.kalshi_api)
         return jsonify(props)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/positions', methods=['GET'])
+@require_kalshi
 def get_positions():
     """Get current positions."""
     try:
-        api = get_user_api()
-        if not api:
-            return jsonify({'error': 'Not authenticated'}), 401
-
-        data = api.get_positions()
+        data = g.kalshi_api.get_positions()
         return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/order', methods=['POST'])
+@require_kalshi
 def place_order():
     """
     Place an order.
@@ -150,10 +338,6 @@ def place_order():
     }
     """
     try:
-        api = get_user_api()
-        if not api:
-            return jsonify({'error': 'Not authenticated'}), 401
-
         data = request.json
 
         ticker = data.get('ticker')
@@ -166,7 +350,7 @@ def place_order():
 
         # Place the order (action is always 'buy' for new positions)
         if side == 'yes':
-            result = api.create_order(
+            result = g.kalshi_api.create_order(
                 ticker=ticker,
                 side='yes',
                 action='buy',
@@ -175,7 +359,7 @@ def place_order():
                 yes_price=price
             )
         else:
-            result = api.create_order(
+            result = g.kalshi_api.create_order(
                 ticker=ticker,
                 side='no',
                 action='buy',
@@ -191,36 +375,59 @@ def place_order():
 
 
 @app.route('/api/orders', methods=['GET'])
+@require_kalshi
 def get_orders():
     """Get open orders."""
     try:
-        api = get_user_api()
-        if not api:
-            return jsonify({'error': 'Not authenticated'}), 401
-
-        data = api.get_orders()
+        data = g.kalshi_api.get_orders()
         return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/order/<order_id>', methods=['DELETE'])
+@require_kalshi
 def cancel_order(order_id):
     """Cancel an order."""
     try:
-        api = get_user_api()
-        if not api:
-            return jsonify({'error': 'Not authenticated'}), 401
-
-        result = api.cancel_order(order_id)
+        result = g.kalshi_api.cancel_order(order_id)
         return jsonify(result)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
+# ============================================================================
+# Health Check
+# ============================================================================
+
+@app.route('/api/health', methods=['GET'])
+def health():
+    """Health check endpoint."""
+    return jsonify({'status': 'ok'})
+
+
+# ============================================================================
+# Database Initialization
+# ============================================================================
+
+@app.cli.command('init-db')
+def init_db_command():
+    """Initialize the database tables."""
+    init_db()
+    print('Database initialized.')
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
     debug = os.environ.get('FLASK_ENV') != 'production'
+
+    # Initialize database tables in development
+    if debug:
+        try:
+            init_db()
+            print("Database tables initialized.")
+        except Exception as e:
+            print(f"Database init skipped: {e}")
 
     print("Starting Kalshi Wagers API server...")
     print(f"Mode: {'production' if not debug else 'development'}")

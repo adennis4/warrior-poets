@@ -264,17 +264,24 @@
         <!-- Balance Bar -->
         <div class="balance-bar">
           <div class="balance-info">
-            <div>
+            <div id="userInfo" style="display: none;">
+              <div class="user-name" id="userName">—</div>
               <div class="balance-label">Kalshi Balance</div>
               <div class="balance-value" id="balanceValue">$—</div>
             </div>
+            <div id="notLoggedIn">
+              <div class="balance-label">Sign in to place bets</div>
+            </div>
           </div>
           <div class="auth-buttons">
-            <button class="kalshi-link" id="loginBtn" onclick="showLoginModal()">
-              Connect to Bet
+            <button class="kalshi-link yahoo-login" id="yahooLoginBtn" onclick="loginWithYahoo()">
+              Login with Yahoo
+            </button>
+            <button class="kalshi-link" id="linkKalshiBtn" onclick="showLinkKalshiModal()" style="display: none;">
+              Link Kalshi Account
             </button>
             <button class="kalshi-link logout-btn" id="logoutBtn" onclick="logout()" style="display: none;">
-              Disconnect
+              Logout
             </button>
           </div>
         </div>
@@ -307,12 +314,12 @@
     <span class="toast-message" id="toastMessage"></span>
   </div>
 
-  <!-- Login Modal -->
-  <div class="modal-overlay" id="loginModal">
+  <!-- Kalshi Link Modal -->
+  <div class="modal-overlay" id="kalshiLinkModal">
     <div class="modal" style="max-width: 480px;">
       <div class="modal-header">
-        <h3 class="modal-title">Connect Your Kalshi Account</h3>
-        <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+        <h3 class="modal-title">Link Your Kalshi Account</h3>
+        <button class="modal-close" onclick="closeLinkKalshiModal()">&times;</button>
       </div>
       <div class="modal-body">
         <!-- Step 1: Instructions -->
@@ -332,7 +339,7 @@
               <li>Don't close that window!</li>
             </ol>
           </div>
-          <button class="btn-submit" onclick="showStep2()" style="margin-top: 16px;">I've created my key →</button>
+          <button class="btn-submit" onclick="showKalshiStep2()" style="margin-top: 16px;">I've created my key →</button>
         </div>
 
         <!-- Step 2: Paste keys -->
@@ -352,11 +359,11 @@ Paste the entire key here
 -----END RSA PRIVATE KEY-----"></textarea>
           </div>
 
-          <div class="order-error" id="loginError"></div>
+          <div class="order-error" id="linkError"></div>
 
           <div class="step-buttons">
-            <button class="btn-cancel" onclick="showStep1()">← Back</button>
-            <button class="btn-submit" id="connectBtn" onclick="login()">Connect Account</button>
+            <button class="btn-cancel" onclick="showKalshiStep1()">← Back</button>
+            <button class="btn-submit" id="linkBtn" onclick="linkKalshiAccount()">Link Account</button>
           </div>
         </div>
       </div>
@@ -673,6 +680,21 @@ Paste the entire key here
       color: var(--text-primary);
     }
 
+    .yahoo-login {
+      background: #6001d2;
+    }
+
+    .yahoo-login:hover {
+      background: #4a01a3;
+    }
+
+    .user-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
     /* Login modal - step-based UI */
     .setup-step {
       animation: fadeIn 0.2s ease;
@@ -986,37 +1008,43 @@ Paste the entire key here
     const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:5001/api'
       : 'https://warrior-poets-api.onrender.com/api';
-    let isAuthenticated = false;
+    let currentUser = null;
+    let hasKalshi = false;
     let currentOrder = { ticker: '', side: '', price: 0 };
 
-    // Auth functions
-    function showLoginModal() {
-      document.getElementById('loginModal').classList.add('active');
-      showStep1();
+    // Yahoo OAuth login
+    function loginWithYahoo() {
+      window.location.href = `${API_BASE}/auth/yahoo`;
     }
 
-    function closeLoginModal() {
-      document.getElementById('loginModal').classList.remove('active');
-      document.getElementById('loginError').classList.remove('visible');
-      showStep1();
+    // Kalshi linking modal functions
+    function showLinkKalshiModal() {
+      document.getElementById('kalshiLinkModal').classList.add('active');
+      showKalshiStep1();
     }
 
-    function showStep1() {
+    function closeLinkKalshiModal() {
+      document.getElementById('kalshiLinkModal').classList.remove('active');
+      document.getElementById('linkError').classList.remove('visible');
+      showKalshiStep1();
+    }
+
+    function showKalshiStep1() {
       document.getElementById('setupStep1').style.display = 'block';
       document.getElementById('setupStep2').style.display = 'none';
     }
 
-    function showStep2() {
+    function showKalshiStep2() {
       document.getElementById('setupStep1').style.display = 'none';
       document.getElementById('setupStep2').style.display = 'block';
       document.getElementById('apiKeyInput').focus();
     }
 
-    async function login() {
+    async function linkKalshiAccount() {
       const apiKey = document.getElementById('apiKeyInput').value.trim();
       const privateKey = document.getElementById('privateKeyInput').value.trim();
-      const errorEl = document.getElementById('loginError');
-      const connectBtn = document.getElementById('connectBtn');
+      const errorEl = document.getElementById('linkError');
+      const linkBtn = document.getElementById('linkBtn');
 
       if (!apiKey) {
         errorEl.textContent = 'Please paste your API Key ID from the downloaded file';
@@ -1036,12 +1064,12 @@ Paste the entire key here
         return;
       }
 
-      connectBtn.disabled = true;
-      connectBtn.textContent = 'Connecting...';
+      linkBtn.disabled = true;
+      linkBtn.textContent = 'Linking...';
       errorEl.classList.remove('visible');
 
       try {
-        const response = await fetch(`${API_BASE}/auth/login`, {
+        const response = await fetch(`${API_BASE}/kalshi/link`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -1054,28 +1082,29 @@ Paste the entire key here
         const result = await response.json();
 
         if (!response.ok) {
-          throw new Error(result.error || 'Login failed');
+          throw new Error(result.error || 'Link failed');
         }
 
-        isAuthenticated = true;
-        updateAuthUI(true, result.balance);
-        closeLoginModal();
-        showToast('Connected to Kalshi!');
+        hasKalshi = true;
+        updateAuthUI();
+        document.getElementById('balanceValue').textContent = '$' + (result.balance / 100).toFixed(2);
+        closeLinkKalshiModal();
+        showToast('Kalshi account linked!');
 
         // Clear inputs
         document.getElementById('apiKeyInput').value = '';
         document.getElementById('privateKeyInput').value = '';
 
       } catch (err) {
-        let message = err.message || 'Failed to connect';
-        if (message.includes('Authentication failed')) {
+        let message = err.message || 'Failed to link';
+        if (message.includes('Invalid Kalshi credentials')) {
           message = 'Connection failed. Double-check that you copied the full API Key ID and the entire Private Key (including BEGIN/END lines).';
         }
         errorEl.textContent = message;
         errorEl.classList.add('visible');
       } finally {
-        connectBtn.disabled = false;
-        connectBtn.textContent = 'Connect';
+        linkBtn.disabled = false;
+        linkBtn.textContent = 'Link Account';
       }
     }
 
@@ -1089,54 +1118,100 @@ Paste the entire key here
         console.error('Logout error:', err);
       }
 
-      isAuthenticated = false;
-      updateAuthUI(false);
-      showToast('Disconnected from Kalshi');
+      currentUser = null;
+      hasKalshi = false;
+      updateAuthUI();
+      showToast('Logged out');
     }
 
-    function updateAuthUI(authenticated, balance = null) {
-      const loginBtn = document.getElementById('loginBtn');
+    function updateAuthUI() {
+      const yahooLoginBtn = document.getElementById('yahooLoginBtn');
+      const linkKalshiBtn = document.getElementById('linkKalshiBtn');
       const logoutBtn = document.getElementById('logoutBtn');
+      const userInfo = document.getElementById('userInfo');
+      const notLoggedIn = document.getElementById('notLoggedIn');
+      const userName = document.getElementById('userName');
       const balanceValue = document.getElementById('balanceValue');
 
-      if (authenticated) {
-        loginBtn.style.display = 'none';
+      if (currentUser) {
+        // Logged in with Yahoo
+        yahooLoginBtn.style.display = 'none';
         logoutBtn.style.display = 'block';
-        if (balance !== null) {
-          balanceValue.textContent = '$' + (balance / 100).toFixed(2);
+        userInfo.style.display = 'block';
+        notLoggedIn.style.display = 'none';
+        userName.textContent = currentUser.name || 'User';
+
+        if (hasKalshi) {
+          // Kalshi is linked
+          linkKalshiBtn.style.display = 'none';
+        } else {
+          // Kalshi not linked yet
+          linkKalshiBtn.style.display = 'block';
+          balanceValue.textContent = 'Not linked';
         }
       } else {
-        loginBtn.style.display = 'block';
+        // Not logged in
+        yahooLoginBtn.style.display = 'block';
+        linkKalshiBtn.style.display = 'none';
         logoutBtn.style.display = 'none';
-        balanceValue.textContent = '$—';
+        userInfo.style.display = 'none';
+        notLoggedIn.style.display = 'block';
       }
     }
 
-    // Check auth status with timeout to prevent page freeze
-    async function checkAuthStatus() {
+    // Check auth status on page load
+    async function checkSession() {
+      // Handle OAuth callback params
+      const urlParams = new URLSearchParams(window.location.search);
+      const loginStatus = urlParams.get('login');
+      const error = urlParams.get('error');
+
+      if (error) {
+        showToast('Login failed: ' + error, true);
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (loginStatus === 'success') {
+        showToast('Logged in successfully!');
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 2000);
+        const timeout = setTimeout(() => controller.abort(), 3000);
 
-        const response = await fetch(`${API_BASE}/auth/status`, {
+        const response = await fetch(`${API_BASE}/auth/user`, {
           credentials: 'include',
           signal: controller.signal
         });
         clearTimeout(timeout);
 
         const data = await response.json();
+
         if (data.authenticated) {
-          isAuthenticated = true;
-          refreshBalance();
-          updateAuthUI(true);
+          currentUser = { name: data.name, email: data.email };
+          hasKalshi = data.has_kalshi;
+          updateAuthUI();
+
+          if (data.kalshi_balance !== undefined) {
+            document.getElementById('balanceValue').textContent = '$' + (data.kalshi_balance / 100).toFixed(2);
+          }
+
+          // Auto-show Kalshi link modal if logged in but not linked
+          if (!hasKalshi && loginStatus === 'success') {
+            showLinkKalshiModal();
+          }
+        } else {
+          updateAuthUI();
         }
       } catch (err) {
         // Server not running or timeout - stay in logged out state
+        updateAuthUI();
       }
     }
 
-    // Check auth on page load (non-blocking)
-    checkAuthStatus();
+    // Check session on page load
+    checkSession();
 
     function openOrderModal(ticker, title, side, price) {
       currentOrder = { ticker, side, price };
@@ -1185,10 +1260,16 @@ Paste the entire key here
     document.getElementById('orderModal').addEventListener('click', (e) => {
       if (e.target.id === 'orderModal') closeOrderModal();
     });
+    document.getElementById('kalshiLinkModal').addEventListener('click', (e) => {
+      if (e.target.id === 'kalshiLinkModal') closeLinkKalshiModal();
+    });
 
     // Close on Escape key
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeOrderModal();
+      if (e.key === 'Escape') {
+        closeOrderModal();
+        closeLinkKalshiModal();
+      }
     });
 
     async function submitOrder() {
@@ -1230,10 +1311,16 @@ Paste the entire key here
 
         if (!response.ok) {
           if (response.status === 401) {
-            isAuthenticated = false;
-            updateAuthUI(false);
+            currentUser = null;
+            hasKalshi = false;
+            updateAuthUI();
             closeOrderModal();
-            showLoginModal();
+            showToast('Please log in again', true);
+            return;
+          }
+          if (response.status === 403) {
+            closeOrderModal();
+            showLinkKalshiModal();
             return;
           }
           throw new Error(result.error || 'Order failed');
