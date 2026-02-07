@@ -181,15 +181,15 @@ def yahoo_callback():
         yahoo_name = None
         if yahoo_guid:
             try:
-                # Try to get user info from Fantasy API
+                # Try to get user info with profile from Fantasy API
                 fantasy_response = requests.get(
-                    "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1?format=json",
+                    "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1/profile?format=json",
                     headers={"Authorization": f"Bearer {access_token}"}
                 )
-                print(f"Yahoo Fantasy response: {fantasy_response.status_code}")
+                print(f"Yahoo Fantasy profile response: {fantasy_response.status_code}")
                 if fantasy_response.status_code == 200:
                     fantasy_data = fantasy_response.json()
-                    print(f"Yahoo Fantasy data: {fantasy_data}")
+                    print(f"Yahoo Fantasy profile data: {fantasy_data}")
                     users = fantasy_data.get('fantasy_content', {}).get('users', {})
                     # Navigate the nested structure
                     for key, user_data in users.items():
@@ -203,8 +203,14 @@ def yahoo_callback():
                                         if isinstance(item, dict):
                                             if 'display_name' in item:
                                                 yahoo_name = item['display_name']
+                                            if 'nickname' in item:
+                                                yahoo_name = item['nickname']
                                             if 'guid' in item and not yahoo_guid:
                                                 yahoo_guid = item['guid']
+                                elif isinstance(part, dict):
+                                    if 'profile' in part:
+                                        profile = part['profile']
+                                        yahoo_name = profile.get('display_name') or profile.get('nickname')
             except Exception as e:
                 print(f"Error fetching Yahoo Fantasy user info: {e}")
 
