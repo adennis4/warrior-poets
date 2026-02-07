@@ -145,6 +145,29 @@
       font-weight: 600;
       color: var(--text-primary);
     }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .record-card {
+        width: auto;
+        padding: 12px;
+      }
+      .record-card-title {
+        font-size: 0.7rem;
+        margin-bottom: 8px;
+      }
+      .record-card-value {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+      }
+      .record-card-detail {
+        font-size: 0.9rem;
+      }
+    }
   </style>
 </head>
 <body>
