@@ -112,18 +112,20 @@ class SortableTable {
 
     // Re-render rows
     this.tbody.innerHTML = '';
+    const totalRows = sorted.length;
     sorted.forEach((item, index) => {
       this.tbody.appendChild(item.element);
-      // Update dynamic rank cells
+      // Update dynamic rank cells - reverse if sorted ascending
       const rankCell = item.element.querySelector('td.dynamic-rank');
       if (rankCell) {
-        rankCell.textContent = index + 1;
-        rankCell.dataset.value = index + 1;
+        const rank = this.currentOrder === 'desc' ? index + 1 : totalRows - index;
+        rankCell.textContent = rank;
+        rankCell.dataset.value = rank;
         // Update rank classes
         rankCell.classList.remove('rank-1', 'rank-2', 'rank-3');
-        if (index === 0) rankCell.classList.add('rank-1');
-        if (index === 1) rankCell.classList.add('rank-2');
-        if (index === 2) rankCell.classList.add('rank-3');
+        if (rank === 1) rankCell.classList.add('rank-1');
+        if (rank === 2) rankCell.classList.add('rank-2');
+        if (rank === 3) rankCell.classList.add('rank-3');
       }
     });
 
