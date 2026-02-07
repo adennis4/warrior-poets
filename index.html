@@ -144,39 +144,46 @@
     const avgPoints = hasData ? totalPointsSum / standingsData.length : null;
     document.getElementById('avgPoints').textContent = hasData ? WP.formatNumber(avgPoints, 1) : '—';
 
-    // Create Points Standings Table
+    // Create Points Standings Table - rank by points
+    const pointsSorted = [...standingsData].sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+    const pointsWithRank = standingsData.map((m, i) => ({
+      ...m,
+      displayRank: i + 1,
+      pointsRank: hasData ? pointsSorted.findIndex(p => p.name === m.name) + 1 : null
+    }));
+
     createTable('pointsStandingsTable', {
       tableId: 'pointsTable',
       defaultSort: 'name',
       defaultOrder: 'asc',
       columns: [
-        { key: 'rank', label: 'Rank', type: 'rank', sortable: false },
+        { key: 'displayRank', label: 'Rank', type: 'rank', sortable: false },
         { key: 'name', label: 'Owner', type: 'member' },
         { key: 'totalPoints', label: 'Points', type: 'number', decimals: 1 },
-        { key: 'yearEndStanding', label: 'Standing', type: 'rank' }
+        { key: 'pointsRank', label: 'Pts Rank', type: 'rank' }
       ],
-      data: standingsData.map((m, i) => ({
-        rank: i + 1,
-        ...m,
-        yearEndStanding: hasData ? m.yearEndStanding : i + 1
-      }))
+      data: pointsWithRank
     });
 
-    // Create Sidebet Standings Table
+    // Create Sidebet Standings Table - rank by total
+    const sidebetSorted = [...sidebetData].sort((a, b) => (b.total || 0) - (a.total || 0));
+    const sidebetWithRank = sidebetData.map((m, i) => ({
+      ...m,
+      displayRank: i + 1,
+      sidebetRank: hasData ? sidebetSorted.findIndex(s => s.name === m.name) + 1 : null
+    }));
+
     createTable('sidebetStandingsTable', {
       tableId: 'sidebetTable',
       defaultSort: 'name',
       defaultOrder: 'asc',
       columns: [
-        { key: 'rank', label: 'Rank', type: 'rank', sortable: false },
+        { key: 'displayRank', label: 'Rank', type: 'rank', sortable: false },
         { key: 'name', label: 'Owner', type: 'member' },
         { key: 'total', label: 'Total', type: 'delta', decimals: 0 },
         { key: 'lowManCount', label: 'Low Man', type: 'number', decimals: 0 }
       ],
-      data: sidebetData.map((m, i) => ({
-        ...m,
-        rank: i + 1
-      }))
+      data: sidebetWithRank
     });
 
     // Weekly Points Table - always show W1-W17
