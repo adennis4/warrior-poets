@@ -146,14 +146,16 @@
 
     // Create Points Standings Table - rank by points
     const pointsSorted = [...standingsData].sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
-    const pointsWithRank = standingsData.map((m) => {
-      const pointsRank = hasData ? pointsSorted.findIndex(p => p.name === m.name) + 1 : null;
-      return {
-        ...m,
-        place: hasData ? (m.yearEndStanding || pointsRank) : null,  // From Yahoo league standings (mock: use pointsRank)
-        pointsRank
-      };
-    });
+    // Mock standings data (random places 1-14) - will come from Yahoo during season
+    const mockPlaces = {
+      'CP': 5, 'Yonk': 3, 'Farber': 7, 'Rick': 9, 'JB': 1, 'Rizzo': 12, 'Ben': 4,
+      'Dues': 10, 'Rich': 6, 'Stern': 2, 'Andrew': 8, 'Pinkston': 13, 'Lloyd': 11, 'Jett': 14
+    };
+    const pointsWithRank = standingsData.map((m) => ({
+      ...m,
+      place: hasData ? mockPlaces[m.name] : null,  // From Yahoo league standings during season
+      pointsRank: hasData ? pointsSorted.findIndex(p => p.name === m.name) + 1 : null
+    }));
 
     createTable('pointsStandingsTable', {
       tableId: 'pointsTable',
