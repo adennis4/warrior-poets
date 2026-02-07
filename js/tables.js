@@ -83,7 +83,7 @@ class SortableTable {
       }
     });
 
-    // Sort the data
+    // Sort the data with stable sort (use name as tiebreaker)
     const sorted = [...this.originalData].sort((a, b) => {
       let valA = a.data[column];
       let valB = b.data[column];
@@ -93,13 +93,21 @@ class SortableTable {
       if (valB === undefined || valB === null || valB === '—') valB = this.currentOrder === 'asc' ? Infinity : -Infinity;
 
       // Compare
+      let result;
       if (typeof valA === 'string' && typeof valB === 'string') {
-        return this.currentOrder === 'asc'
+        result = this.currentOrder === 'asc'
           ? valA.localeCompare(valB)
           : valB.localeCompare(valA);
+      } else {
+        result = this.currentOrder === 'asc' ? valA - valB : valB - valA;
       }
 
-      return this.currentOrder === 'asc' ? valA - valB : valB - valA;
+      // Use name as tiebreaker for stable sort
+      if (result === 0 && a.data.name && b.data.name) {
+        return a.data.name.localeCompare(b.data.name);
+      }
+
+      return result;
     });
 
     // Re-render rows

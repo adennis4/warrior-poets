@@ -171,6 +171,8 @@
     });
 
     // Create Sidebet Standings Table - rank by total (highest total = rank 1)
+    // Pre-sort data by total descending so initial render has correct ranks
+    const sidebetSortedData = [...sidebetData].sort((a, b) => (b.total || 0) - (a.total || 0));
     createTable('sidebetStandingsTable', {
       tableId: 'sidebetTable',
       defaultSort: 'total',
@@ -181,7 +183,7 @@
         { key: 'total', label: 'Total', type: 'delta', decimals: 0 },
         { key: 'lowManCount', label: 'Low Man', type: 'number', decimals: 0 }
       ],
-      data: sidebetData
+      data: sidebetSortedData
     });
 
     // Weekly Points Table - always show W1-W17
