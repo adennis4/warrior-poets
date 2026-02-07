@@ -190,27 +190,16 @@ def yahoo_callback():
                 if fantasy_response.status_code == 200:
                     fantasy_data = fantasy_response.json()
                     print(f"Yahoo Fantasy profile data: {fantasy_data}")
-                    users = fantasy_data.get('fantasy_content', {}).get('users', {})
-                    # Navigate the nested structure
-                    for key, user_data in users.items():
-                        if key == 'count':
-                            continue
-                        if isinstance(user_data, dict) and 'user' in user_data:
-                            user_info = user_data['user']
-                            for part in user_info:
-                                if isinstance(part, list):
-                                    for item in part:
-                                        if isinstance(item, dict):
-                                            if 'display_name' in item:
-                                                yahoo_name = item['display_name']
-                                            if 'nickname' in item:
-                                                yahoo_name = item['nickname']
-                                            if 'guid' in item and not yahoo_guid:
-                                                yahoo_guid = item['guid']
-                                elif isinstance(part, dict):
-                                    if 'profile' in part:
-                                        profile = part['profile']
-                                        yahoo_name = profile.get('display_name') or profile.get('nickname')
+                    # Parse: fantasy_content.users.0.user = [{guid:...}, {profile:{display_name:...}}]
+                    try:
+                        user_list = fantasy_data['fantasy_content']['users']['0']['user']
+                        for item in user_list:
+                            if isinstance(item, dict) and 'profile' in item:
+                                yahoo_name = item['profile'].get('display_name')
+                                print(f"Found display_name: {yahoo_name}")
+                                break
+                    except (KeyError, TypeError) as e:
+                        print(f"Error parsing Fantasy profile: {e}")
             except Exception as e:
                 print(f"Error fetching Yahoo Fantasy user info: {e}")
 
