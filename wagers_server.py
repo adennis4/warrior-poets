@@ -43,8 +43,10 @@ YAHOO_REDIRECT_URI = os.environ.get(
 )
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:8000')
 
-# Allow requests from GitHub Pages and localhost
+# Allow requests from custom domain, GitHub Pages, and localhost
 ALLOWED_ORIGINS = [
+    'https://wpff.club',
+    'https://www.wpff.club',
     'https://adennis4.github.io',
     'http://localhost:8000',
     'http://localhost:5500',

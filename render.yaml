@@ -22,7 +22,7 @@ services:
       - key: YAHOO_REDIRECT_URI
         value: https://warrior-poets-api.onrender.com/api/auth/yahoo/callback
       - key: FRONTEND_URL
-        value: https://adennis4.github.io/warrior-poets
+        value: https://wpff.club
       - key: KALSHI_USE_DEMO
         value: "false"
 
