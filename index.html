@@ -146,11 +146,14 @@
 
     // Create Points Standings Table - rank by points
     const pointsSorted = [...standingsData].sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
-    const pointsWithRank = standingsData.map((m, i) => ({
-      ...m,
-      place: hasData ? m.yearEndStanding : i + 1,  // From Yahoo league standings
-      pointsRank: hasData ? pointsSorted.findIndex(p => p.name === m.name) + 1 : null
-    }));
+    const pointsWithRank = standingsData.map((m) => {
+      const pointsRank = hasData ? pointsSorted.findIndex(p => p.name === m.name) + 1 : null;
+      return {
+        ...m,
+        place: hasData ? (m.yearEndStanding || pointsRank) : null,  // From Yahoo league standings (mock: use pointsRank)
+        pointsRank
+      };
+    });
 
     createTable('pointsStandingsTable', {
       tableId: 'pointsTable',
