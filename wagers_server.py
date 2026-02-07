@@ -211,6 +211,8 @@ def yahoo_callback():
         if not yahoo_guid:
             return redirect(f"{FRONTEND_URL}/wagers.html?error=no_user_id")
 
+        print(f"Creating/updating user: guid={yahoo_guid}, name={yahoo_name}, email={yahoo_email}")
+
         # Create or get user
         user = get_or_create_user(yahoo_guid, yahoo_email, yahoo_name)
 
