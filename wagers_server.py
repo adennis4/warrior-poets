@@ -176,31 +176,37 @@ def yahoo_callback():
                 guid_data = guid_response.json()
                 yahoo_guid = guid_data.get('guid', {}).get('value')
 
-        # Get user profile from Yahoo Social API
+        # Get user's name from Yahoo Fantasy API (we have access to this)
         yahoo_email = None
         yahoo_name = None
         if yahoo_guid:
             try:
-                profile_response = requests.get(
-                    f"https://social.yahooapis.com/v1/user/{yahoo_guid}/profile?format=json",
+                # Try to get user info from Fantasy API
+                fantasy_response = requests.get(
+                    "https://fantasysports.yahooapis.com/fantasy/v2/users;use_login=1?format=json",
                     headers={"Authorization": f"Bearer {access_token}"}
                 )
-                print(f"Yahoo profile response: {profile_response.status_code}")
-                if profile_response.status_code == 200:
-                    profile_data = profile_response.json()
-                    print(f"Yahoo profile data: {profile_data}")
-                    profile = profile_data.get('profile', {})
-                    yahoo_name = (
-                        profile.get('nickname') or
-                        profile.get('givenName') or
-                        profile.get('familyName') or
-                        f"{profile.get('givenName', '')} {profile.get('familyName', '')}".strip()
-                    )
-                    emails = profile.get('emails')
-                    if emails and isinstance(emails, list) and len(emails) > 0:
-                        yahoo_email = emails[0].get('handle')
+                print(f"Yahoo Fantasy response: {fantasy_response.status_code}")
+                if fantasy_response.status_code == 200:
+                    fantasy_data = fantasy_response.json()
+                    print(f"Yahoo Fantasy data: {fantasy_data}")
+                    users = fantasy_data.get('fantasy_content', {}).get('users', {})
+                    # Navigate the nested structure
+                    for key, user_data in users.items():
+                        if key == 'count':
+                            continue
+                        if isinstance(user_data, dict) and 'user' in user_data:
+                            user_info = user_data['user']
+                            for part in user_info:
+                                if isinstance(part, list):
+                                    for item in part:
+                                        if isinstance(item, dict):
+                                            if 'display_name' in item:
+                                                yahoo_name = item['display_name']
+                                            if 'guid' in item and not yahoo_guid:
+                                                yahoo_guid = item['guid']
             except Exception as e:
-                print(f"Error fetching Yahoo profile: {e}")
+                print(f"Error fetching Yahoo Fantasy user info: {e}")
 
         if not yahoo_guid:
             return redirect(f"{FRONTEND_URL}/wagers.html?error=no_user_id")
