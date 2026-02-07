@@ -104,8 +104,19 @@ class SortableTable {
 
     // Re-render rows
     this.tbody.innerHTML = '';
-    sorted.forEach(item => {
+    sorted.forEach((item, index) => {
       this.tbody.appendChild(item.element);
+      // Update dynamic rank cells
+      const rankCell = item.element.querySelector('td.dynamic-rank');
+      if (rankCell) {
+        rankCell.textContent = index + 1;
+        rankCell.dataset.value = index + 1;
+        // Update rank classes
+        rankCell.classList.remove('rank-1', 'rank-2', 'rank-3');
+        if (index === 0) rankCell.classList.add('rank-1');
+        if (index === 1) rankCell.classList.add('rank-2');
+        if (index === 2) rankCell.classList.add('rank-3');
+      }
     });
 
     // Re-store data with new row references
@@ -149,7 +160,16 @@ function createTable(containerId, config) {
                 let dataValue = '';
 
                 // Format based on column type
-                if (col.type === 'rank') {
+                if (col.type === 'dynamicRank') {
+                  classes.push('rank');
+                  classes.push('numeric');
+                  classes.push('dynamic-rank');
+                  displayValue = index + 1;
+                  dataValue = index + 1;
+                  if (index === 0) classes.push('rank-1');
+                  if (index === 1) classes.push('rank-2');
+                  if (index === 2) classes.push('rank-3');
+                } else if (col.type === 'rank') {
                   classes.push('rank');
                   classes.push('numeric');
                   if (value === null || value === undefined || value === 0) {
