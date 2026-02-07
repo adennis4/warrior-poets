@@ -165,12 +165,11 @@
       data: pointsWithRank
     });
 
-    // Create Sidebet Standings Table - rank by total
+    // Create Sidebet Standings Table - rank by total (highest total = rank 1)
     const sidebetSorted = [...sidebetData].sort((a, b) => (b.total || 0) - (a.total || 0));
-    const sidebetWithRank = sidebetData.map((m, i) => ({
+    const sidebetWithRank = sidebetData.map((m) => ({
       ...m,
-      displayRank: i + 1,
-      sidebetRank: hasData ? sidebetSorted.findIndex(s => s.name === m.name) + 1 : null
+      displayRank: hasData ? sidebetSorted.findIndex(s => s.name === m.name) + 1 : null
     }));
 
     createTable('sidebetStandingsTable', {
