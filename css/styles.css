@@ -453,7 +453,7 @@ thead {
 }
 
 th {
-  padding: 12px 16px;
+  padding: 14px 20px;
   text-align: center;
   font-weight: 600;
   font-size: 0.75rem;
@@ -496,7 +496,7 @@ th.sort-desc::after {
 }
 
 td {
-  padding: 12px 16px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
   text-align: center;
@@ -523,9 +523,30 @@ td.negative {
 /* Rank column */
 td.rank {
   text-align: center;
-  width: 50px;
+  width: 70px;
+  min-width: 70px;
 }
 
+/* Dynamic rank column */
+td.dynamic-rank {
+  width: 70px;
+  min-width: 70px;
+}
+
+/* Member/Owner column */
+td.member-name {
+  min-width: 100px;
+}
+
+/* Numeric columns */
+td.numeric {
+  min-width: 80px;
+}
+
+/* Consistent header widths */
+th {
+  min-width: 70px;
+}
 
 /* Member name styling */
 .member-name {
