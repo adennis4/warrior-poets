@@ -122,16 +122,19 @@
         var pointsData = allTime.pointsTotals[MEMBER] || {};
         var sidebetData = allTime.sidebetTotals[MEMBER] || {};
         var standingsData = allTime.yearEndStandings[MEMBER] || {};
+        var seasons = LEAGUE_DATA.seasons;
         var years = LEAGUE_DATA.years;
         var seasonTableData = [];
         
         for (var i = 0; i < years.length; i++) {
           var year = years[i];
           if (pointsData.yearly && pointsData.yearly[year] !== undefined) {
+            var seasonStandings = seasons[year] && seasons[year].standings ? seasons[year].standings[MEMBER] : null;
             seasonTableData.push({
               year: year,
               points: pointsData.yearly[year] || 0,
               standing: standingsData.yearly ? standingsData.yearly[year] : null,
+              pointsRank: seasonStandings ? seasonStandings.pointsRank : null,
               sidebets: sidebetData.yearly ? sidebetData.yearly[year] : 0
             });
           }
@@ -145,7 +148,8 @@
           columns: [
             { key: 'year', label: 'Year' },
             { key: 'points', label: 'Points', type: 'number', decimals: 1 },
-            { key: 'standing', label: 'Standings', type: 'rank' },
+            { key: 'standing', label: 'Final Standings', type: 'rank' },
+            { key: 'pointsRank', label: 'Final Points', type: 'rank' },
             { key: 'sidebets', label: 'Sidebets', type: 'delta' }
           ],
           data: seasonTableData
@@ -158,6 +162,7 @@
         var allTime = LEAGUE_DATA.allTime;
         var pointsData = allTime.pointsTotals[MEMBER] || {};
         var standingsData = allTime.yearEndStandings[MEMBER] || {};
+        var seasons = LEAGUE_DATA.seasons;
         var years = LEAGUE_DATA.years;
         var chartYears = [];
         var chartPoints = [];
@@ -166,6 +171,7 @@
         for (var i = 0; i < years.length; i++) {
           var year = years[i];
           if (pointsData.yearly && pointsData.yearly[year] !== undefined) {
+            var seasonStandings = seasons[year] && seasons[year].standings ? seasons[year].standings[MEMBER] : null;
             chartYears.push(year);
             chartPoints.push(pointsData.yearly[year]);
             chartStandings.push(standingsData.yearly ? standingsData.yearly[year] : null);
