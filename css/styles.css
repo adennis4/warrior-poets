@@ -446,6 +446,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  table-layout: fixed;
 }
 
 thead {
@@ -523,29 +524,11 @@ td.negative {
 /* Rank column */
 td.rank {
   text-align: center;
-  width: 70px;
-  min-width: 70px;
 }
 
 /* Dynamic rank column */
 td.dynamic-rank {
-  width: 70px;
-  min-width: 70px;
-}
-
-/* Member/Owner column */
-td.member-name {
-  min-width: 100px;
-}
-
-/* Numeric columns */
-td.numeric {
-  min-width: 80px;
-}
-
-/* Consistent header widths */
-th {
-  min-width: 70px;
+  text-align: center;
 }
 
 /* Member name styling */
