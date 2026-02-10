@@ -21,7 +21,7 @@
         <!-- All-Time Points Leaders -->
         <div class="card" style="margin-bottom: 24px;">
           <div class="card-header">
-            <h2 class="card-title">All-Time Points Totals</h2>
+            <h2 class="card-title">All-Time Points (Avg/Season)</h2>
           </div>
           <div class="card-body" id="allTimePointsTable"></div>
         </div>
@@ -29,7 +29,7 @@
         <!-- All-Time Sidebet Leaders -->
         <div class="card" style="margin-bottom: 24px;">
           <div class="card-header">
-            <h2 class="card-title">All-Time Sidebet Totals</h2>
+            <h2 class="card-title">All-Time Sidebets (Avg/Season)</h2>
           </div>
           <div class="card-body" id="allTimeSidebetsTable"></div>
         </div>
@@ -57,7 +57,7 @@
     const championships = allTime.championships;
     const years = LEAGUE_DATA.years;
 
-    // All-Time Points Totals
+    // All-Time Points - ranked by average per season
     const pointsData = Object.entries(allTime.pointsTotals)
       .map(([name, data]) => ({
         name,
@@ -67,17 +67,17 @@
         seasonsPlayed: Object.keys(data.yearly || {}).length,
         championships: championships[name] || 0
       }))
-      .sort((a, b) => b.total - a.total);
+      .sort((a, b) => b.avg - a.avg);
 
     createTable('allTimePointsTable', {
       tableId: 'allTimePoints',
-      defaultSort: 'total',
+      defaultSort: 'avg',
       defaultOrder: 'desc',
       columns: [
         { key: 'displayRank', label: 'Rank', type: 'rank', sortable: false },
         { key: 'name', label: 'Owner', type: 'member' },
-        { key: 'total', label: 'Total Points', type: 'number', decimals: 1 },
         { key: 'avg', label: 'Avg/Season', type: 'number', decimals: 1 },
+        { key: 'total', label: 'Total Points', type: 'number', decimals: 1 },
         { key: 'seasonsPlayed', label: 'Seasons', type: 'number', decimals: 0 }
       ],
       data: pointsData.map((m, i) => ({
@@ -86,7 +86,7 @@
       }))
     });
 
-    // All-Time Sidebet Totals
+    // All-Time Sidebets - ranked by average per season
     const sidebetData = Object.entries(allTime.sidebetTotals)
       .map(([name, data]) => ({
         name,
@@ -96,17 +96,17 @@
         seasonsPlayed: Object.keys(data.yearly || {}).length,
         championships: championships[name] || 0
       }))
-      .sort((a, b) => b.total - a.total);
+      .sort((a, b) => b.avg - a.avg);
 
     createTable('allTimeSidebetsTable', {
       tableId: 'allTimeSidebets',
-      defaultSort: 'total',
+      defaultSort: 'avg',
       defaultOrder: 'desc',
       columns: [
         { key: 'displayRank', label: 'Rank', type: 'rank', sortable: false },
         { key: 'name', label: 'Owner', type: 'member' },
-        { key: 'total', label: 'Total', type: 'delta', decimals: 0 },
         { key: 'avg', label: 'Avg/Season', type: 'delta', decimals: 0 },
+        { key: 'total', label: 'Total', type: 'delta', decimals: 0 },
         { key: 'seasonsPlayed', label: 'Seasons', type: 'number', decimals: 0 }
       ],
       data: sidebetData.map((m, i) => ({
