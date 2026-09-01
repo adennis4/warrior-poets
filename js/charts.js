@@ -255,7 +255,7 @@ function createDoughnutChart(canvasId, data, options = {}) {
       datasets: [{
         data: data.values,
         backgroundColor: data.labels.map(label => chartColors.members[label] || chartColors.primary),
-        borderColor: '#ffffff',
+        borderColor: '#1c171f',
         borderWidth: 2
       }]
     },
@@ -266,7 +266,7 @@ function createDoughnutChart(canvasId, data, options = {}) {
         legend: {
           position: 'right',
           labels: {
-            color: '#5a5a7a',
+            color: '#b8ac95',
             padding: 16,
             font: {
               family: "'Inter', sans-serif"
@@ -295,9 +295,9 @@ function createWeeklyHeatmap(containerId, data, options = {}) {
 
   const { weeks, members, values, minVal, maxVal } = data;
 
-  // Color scale function - vibrant colors for light theme
+  // Color scale function
   const getColor = (val) => {
-    if (val === null || val === undefined) return '#f0f2f7';
+    if (val === null || val === undefined) return '#332b3a';
     const ratio = (val - minVal) / (maxVal - minVal);
     if (ratio > 0.75) return '#51cf66';
     if (ratio > 0.5) return '#94d82d';
@@ -336,12 +336,12 @@ function createWeeklyHeatmap(containerId, data, options = {}) {
       .heatmap-label {
         width: 80px;
         justify-content: flex-start;
-        color: #5a5a7a;
+        color: #b8ac95;
         font-size: 0.8rem;
       }
       .heatmap-header-cell {
-        background-color: #f0f2f7;
-        color: #5a5a7a;
+        background-color: #221d27;
+        color: #b8ac95;
         font-size: 0.7rem;
       }
     </style>
