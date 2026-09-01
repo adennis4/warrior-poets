@@ -14,6 +14,9 @@ class SortableTable {
     this.currentSort = this.options.defaultSort;
     this.currentOrder = this.options.defaultOrder;
     this.originalData = [];
+    this.rowData = this.options.rowData || [];
+    this.movementKey = this.options.movementKey;
+    this.showRankTier = this.options.showRankTier;
 
     this.init();
   }
@@ -41,7 +44,7 @@ class SortableTable {
 
   storeOriginalData() {
     const rows = this.tbody.querySelectorAll('tr');
-    this.originalData = Array.from(rows).map(row => {
+    this.originalData = Array.from(rows).map((row, rowIndex) => {
       const cells = row.querySelectorAll('td');
       const data = {};
 
@@ -60,7 +63,7 @@ class SortableTable {
         }
       });
 
-      return { element: row, data };
+      return { element: row, data, rowObj: this.rowData[rowIndex] };
     });
   }
 
@@ -119,13 +122,26 @@ class SortableTable {
       const rankCell = item.element.querySelector('td.dynamic-rank');
       if (rankCell) {
         const rank = this.currentOrder === 'desc' ? index + 1 : totalRows - index;
-        rankCell.textContent = rank;
+        let rankDisplay = String(rank);
+        if (this.movementKey && item.rowObj) {
+          rankDisplay += WP.formatRankMovement(item.rowObj[this.movementKey]);
+        }
+        rankCell.innerHTML = rankDisplay;
         rankCell.dataset.value = rank;
         // Update rank classes
         rankCell.classList.remove('rank-1', 'rank-2', 'rank-3');
         if (rank === 1) rankCell.classList.add('rank-1');
         if (rank === 2) rankCell.classList.add('rank-2');
         if (rank === 3) rankCell.classList.add('rank-3');
+      }
+      // Recompute the rank-tier row class against the new post-sort order
+      if (this.showRankTier) {
+        const resolvedRank = this.showRankTier === true
+          ? index + 1
+          : (item.rowObj ? item.rowObj[this.showRankTier] : null);
+        const tier = WP.getRankTier(resolvedRank, totalRows);
+        item.element.classList.remove('rank-tier-top', 'rank-tier-bottom');
+        if (tier) item.element.classList.add(`rank-tier-${tier}`);
       }
     });
 
@@ -235,7 +251,14 @@ function createTable(containerId, config) {
   container.innerHTML = html;
 
   // Initialize sorting
-  return new SortableTable(tableId, { defaultSort, defaultOrder });
+  const dynamicRankCol = columns.find(col => col.type === 'dynamicRank');
+  return new SortableTable(tableId, {
+    defaultSort,
+    defaultOrder,
+    rowData: data,
+    movementKey: dynamicRankCol && dynamicRankCol.movementKey,
+    showRankTier: config.showRankTier
+  });
 }
 
 // Export
