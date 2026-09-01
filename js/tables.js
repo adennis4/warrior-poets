@@ -43,6 +43,11 @@ class SortableTable {
   }
 
   storeOriginalData() {
+    const rowDataByName = {};
+    this.rowData.forEach(r => {
+      if (r && r.name) rowDataByName[r.name] = r;
+    });
+
     const rows = this.tbody.querySelectorAll('tr');
     this.originalData = Array.from(rows).map((row, rowIndex) => {
       const cells = row.querySelectorAll('td');
@@ -63,7 +68,8 @@ class SortableTable {
         }
       });
 
-      return { element: row, data, rowObj: this.rowData[rowIndex] };
+      const rowObj = (data.name && rowDataByName[data.name]) || this.rowData[rowIndex];
+      return { element: row, data, rowObj };
     });
   }
 
