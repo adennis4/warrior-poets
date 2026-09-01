@@ -31,8 +31,10 @@
       color: var(--accent-gold);
     }
     .champions-list {
-      max-width: 800px;
-      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
     }
     .championship-timeline {
       margin-top: 48px;
@@ -226,6 +228,15 @@
     const yearEndStandings = allTime.yearEndStandings;
     const seasons = LEAGUE_DATA.seasons;
 
+    // Most recent fantasy team name for each multi-time champion (from the
+    // league's historical spreadsheet - not tracked elsewhere in data.js)
+    const TEAM_NAMES = {
+      'Stern': "Hudson's Pack",
+      'Farber': 'Destroying YOR',
+      'CP': "Beanie's Babies",
+      'Heath': 'Head Hunters'
+    };
+
     // Get champions with their winning years (only multiple winners)
     const championsData = Object.entries(championships)
       .map(([name, count]) => {
@@ -239,9 +250,8 @@
       .sort((a, b) => b.count - a.count);
 
     // Champions Leaderboard
-    const leaderboardHtml = championsData.map((champ, i) => `
+    const leaderboardHtml = championsData.map((champ) => `
       <div class="hof-champion">
-        <div class="hof-rank">${i + 1}</div>
         <div class="hof-info">
           <div class="hof-name">
             ${champ.name}
@@ -249,6 +259,7 @@
               ${Array(champ.count).fill(WP.icons.trophy).join('')}
             </div>
           </div>
+          ${TEAM_NAMES[champ.name] ? `<div class="hof-team">${TEAM_NAMES[champ.name]}</div>` : ''}
           <div class="hof-years">${champ.years.join(', ')}</div>
         </div>
       </div>
