@@ -161,8 +161,15 @@ function createTable(containerId, config) {
           </tr>
         </thead>
         <tbody>
-          ${data.map((row, index) => `
-            <tr ${onRowClick ? `onclick="${onRowClick}('${row.id || row.name || index}')"` : ''}>
+          ${data.map((row, index) => {
+            const resolvedRank = config.showRankTier === true
+              ? index + 1
+              : (typeof config.showRankTier === 'string' ? row[config.showRankTier] : null);
+            const rankTier = config.showRankTier ? WP.getRankTier(resolvedRank, data.length) : null;
+            const rowClass = rankTier ? ` class="rank-tier-${rankTier}"` : '';
+
+            return `
+            <tr${rowClass} ${onRowClick ? `onclick="${onRowClick}('${row.id || row.name || index}')"` : ''}>
               ${columns.map(col => {
                 let value = row[col.key];
                 let displayValue = value;
@@ -179,6 +186,9 @@ function createTable(containerId, config) {
                   if (index === 0) classes.push('rank-1');
                   if (index === 1) classes.push('rank-2');
                   if (index === 2) classes.push('rank-3');
+                  if (col.movementKey) {
+                    displayValue = String(displayValue) + WP.formatRankMovement(row[col.movementKey]);
+                  }
                 } else if (col.type === 'rank') {
                   classes.push('rank');
                   classes.push('numeric');
@@ -190,6 +200,9 @@ function createTable(containerId, config) {
                     if (value === 2) classes.push('rank-2');
                     if (value === 3) classes.push('rank-3');
                     dataValue = value;
+                    if (col.movementKey) {
+                      displayValue = String(value) + WP.formatRankMovement(row[col.movementKey]);
+                    }
                   }
                 } else if (col.type === 'number') {
                   classes.push('numeric');
@@ -212,7 +225,8 @@ function createTable(containerId, config) {
                 return `<td class="${classes.join(' ')}" ${dataValue !== '' ? `data-value="${dataValue}"` : ''}>${displayValue}</td>`;
               }).join('')}
             </tr>
-          `).join('')}
+          `;
+          }).join('')}
         </tbody>
       </table>
     </div>

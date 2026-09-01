@@ -537,6 +537,34 @@ td.dynamic-rank {
   text-align: center;
 }
 
+/* Rank tier bar (top half / bottom half of a ranked table) */
+tr.rank-tier-top td:first-child {
+  border-left: 4px solid var(--positive);
+}
+
+tr.rank-tier-bottom td:first-child {
+  border-left: 4px solid var(--negative);
+}
+
+/* Rank movement arrows */
+.rank-arrow {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.7em;
+}
+
+.rank-arrow-up {
+  color: var(--positive);
+}
+
+.rank-arrow-down {
+  color: var(--negative);
+}
+
+.rank-arrow-same {
+  color: var(--text-muted);
+}
+
 /* Member name styling */
 .member-name {
   font-weight: 500;
