@@ -36,24 +36,24 @@ const chartColors = {
   }
 };
 
-// Default chart options for light theme
+// Default chart options for dark theme
 const defaultOptions = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: {
       labels: {
-        color: '#5a5a7a',
+        color: '#b8ac95',
         font: {
           family: "'Inter', sans-serif"
         }
       }
     },
     tooltip: {
-      backgroundColor: '#ffffff',
-      titleColor: '#1a1a2e',
-      bodyColor: '#5a5a7a',
-      borderColor: '#e0e4ed',
+      backgroundColor: '#1c171f',
+      titleColor: '#f2ede4',
+      bodyColor: '#b8ac95',
+      borderColor: '#332b3a',
       borderWidth: 1,
       cornerRadius: 8,
       titleFont: {
@@ -68,11 +68,11 @@ const defaultOptions = {
   scales: {
     x: {
       grid: {
-        color: '#e0e4ed',
+        color: 'rgba(255, 255, 255, 0.06)',
         drawBorder: false
       },
       ticks: {
-        color: '#5a5a7a',
+        color: '#b8ac95',
         font: {
           family: "'Inter', sans-serif"
         }
@@ -80,11 +80,11 @@ const defaultOptions = {
     },
     y: {
       grid: {
-        color: '#e0e4ed',
+        color: 'rgba(255, 255, 255, 0.06)',
         drawBorder: false
       },
       ticks: {
-        color: '#5a5a7a',
+        color: '#b8ac95',
         font: {
           family: "'Inter', sans-serif"
         }
