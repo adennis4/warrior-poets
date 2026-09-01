@@ -8,3 +8,4 @@ coverage/
 debug_*.py
 debug_*.json
 .claude/
+.superpowers/
