@@ -18,6 +18,8 @@
 - `hall-of-fame.html` has its own inline `<style>` block that referenced the removed `--accent-blue`/`--accent-teal` tokens — a real regression (vanished timeline connector, wrong label color). This file was missing from every task's file list; it's now fixed as part of Task 1 and needs no further action.
 - `wagers.html` has 8 more `var(--accent-blue)` references beyond the hardcoded-hex sites originally caught in Task 3 below. Task 3's steps have been expanded to include them.
 
+**Post-Task-2 correction:** Task 2's code review caught that this plan's `defaultOptions.tooltip.borderColor` (`#332b3a`, the generic border color) diverged from the design spec, which calls for the crimson brand accent there. Using the spec's literal `--accent-primary` (`#7a1f2b`) would have repeated the exact low-contrast mistake Task 1 already fixed elsewhere (base crimson is too dark to read as a thin border against the near-black background), so this plan now specifies `--accent-primary-bright`'s hex (`#dc3d52`) instead, applied consistently to both Task 2's own code (fixed in commit on `redesign/crimson-gold`) and Task 3's sed command below.
+
 ---
 
 ## File Structure
@@ -286,7 +288,7 @@ const defaultOptions = {
       backgroundColor: '#1c171f',
       titleColor: '#f2ede4',
       bodyColor: '#b8ac95',
-      borderColor: '#332b3a',
+      borderColor: '#dc3d52',
       borderWidth: 1,
       cornerRadius: 8,
       titleFont: {
@@ -360,13 +362,13 @@ for f in members/*.html; do
   sed -i '' "s/'#5a5a7a'/'#b8ac95'/g" "$f"
   sed -i '' "s/backgroundColor: '#ffffff'/backgroundColor: '#1c171f'/g" "$f"
   sed -i '' "s/titleColor: '#1a1a2e'/titleColor: '#f2ede4'/g" "$f"
-  sed -i '' "s/borderColor: '#e0e4ed'/borderColor: '#332b3a'/g" "$f"
+  sed -i '' "s/borderColor: '#e0e4ed'/borderColor: '#dc3d52'/g" "$f"
   sed -i '' "s/grid: { color: '#e0e4ed' }/grid: { color: 'rgba(255,255,255,0.06)' }/g" "$f"
   sed -i '' "s/'#666666'/'#b8ac95'/g" "$f"
 done
 ```
 
-(`#868e96` is the "Standing" line's border color — mapped to a warm-tinted grey (`#9a8f7a`) so it still reads clearly on the dark background instead of the old cool grey.)
+(`#868e96` is the "Standing" line's border color — mapped to a warm-tinted grey (`#9a8f7a`) so it still reads clearly on the dark background instead of the old cool grey. The tooltip `borderColor` maps to `--accent-primary-bright`'s hex (`#dc3d52`), not base `--accent-primary` — same reasoning as Task 1's border/text usages: base crimson is too close to the dark background to read as a 1px border. Task 2's own `js/charts.js` change was corrected to this same value after its code review caught the mismatch.)
 
 - [ ] **Step 2: Verify no old-theme hex values remain in member pages**
 
