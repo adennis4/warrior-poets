@@ -458,6 +458,12 @@ table {
 #weeklyPoints,
 #weeklySidebets {
   min-width: 1400px;
+  /* Safari does not support position: sticky on table cells when the table
+     uses border-collapse: collapse - the sticky column silently scrolls
+     with everything else instead of freezing. Switching to separate model
+     with zero spacing renders identically but restores sticky support. */
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 /* Freeze the Owner column while scrolling the wide weekly breakdown tables
