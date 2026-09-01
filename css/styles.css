@@ -1,35 +1,35 @@
-/* Warrior Poets Fantasy Football - Light & Fun Theme */
+/* Warrior Poets Fantasy Football - Crimson & Gold Theme */
 
 :root {
-  /* Colors - Light & Vibrant */
-  --bg-primary: #f8f9fc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f0f2f7;
-  --bg-card: #ffffff;
-  --bg-hover: #e8ebf2;
+  /* Colors - Crimson & Gold (dark) */
+  --bg-primary: #16131a;
+  --bg-secondary: #1c171f;
+  --bg-tertiary: #221d27;
+  --bg-card: #1c171f;
+  --bg-hover: #2a2530;
 
-  --text-primary: #1a1a2e;
-  --text-secondary: #5a5a7a;
-  --text-muted: #8888a0;
+  --text-primary: #f2ede4;
+  --text-secondary: #b8ac95;
+  --text-muted: #6a6070;
 
-  --accent-primary: #ff6b6b;
-  --accent-secondary: #4ecdc4;
-  --accent-gold: #f9a825;
-  --accent-blue: #3459ed;
-  --accent-purple: #9775fa;
-  --accent-pink: #f06595;
-  --accent-orange: #ff922b;
-  --accent-teal: #20c997;
+  /* accent-primary: large fills/backgrounds/borders (crimson).
+     accent-primary-bright: anywhere crimson is foreground TEXT or a thin/
+     small decorative element - the base crimson is too close to the near-
+     black background to read as text. */
+  --accent-primary: #7a1f2b;
+  --accent-primary-bright: #dc3d52;
+  --accent-gold: #f0c34d;
 
-  --border-color: #e0e4ed;
-  --border-light: #d0d5e0;
+  --border-color: #332b3a;
+  --border-light: #4a4152;
 
-  /* Positive/Negative */
-  --positive: #2ecc71;
-  --negative: #e74c3c;
+  /* Positive/Negative - kept a distinct hue family from the brand accents
+     so a +$45 / -$25 delta is never visually confused with brand chrome */
+  --positive: #3ecf6e;
+  --negative: #ff5c72;
 
   /* Inactive member styling */
-  --inactive-text: #a0a0b0;
+  --inactive-text: #8a7f72;
 
   /* Spacing */
   --sidebar-width: 240px;
@@ -61,13 +61,13 @@ body {
 }
 
 a {
-  color: var(--accent-blue);
+  color: var(--accent-gold);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 a:hover {
-  color: var(--accent-primary);
+  color: var(--accent-primary-bright);
 }
 
 /* Layout */
@@ -118,7 +118,7 @@ a:hover {
 }
 
 .sidebar-logo span {
-  color: var(--accent-blue);
+  color: var(--accent-gold);
   line-height: 1.2;
   font-weight: 700;
 }
@@ -137,7 +137,7 @@ a:hover {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--accent-teal);
+  color: var(--text-secondary);
 }
 
 .nav-section-toggle {
@@ -149,7 +149,7 @@ a:hover {
 }
 
 .nav-section-toggle:hover {
-  color: var(--accent-blue);
+  color: var(--accent-gold);
 }
 
 .nav-toggle-icon {
@@ -194,8 +194,8 @@ a:hover {
 }
 
 .nav-year-link.active {
-  background-color: rgba(52, 89, 237, 0.15);
-  color: var(--accent-blue);
+  background-color: rgba(122, 31, 43, 0.35);
+  color: var(--accent-gold);
   font-weight: 500;
 }
 
@@ -220,8 +220,8 @@ a:hover {
 }
 
 .nav-member-link.active {
-  background-color: rgba(52, 89, 237, 0.15);
-  color: var(--accent-blue);
+  background-color: rgba(122, 31, 43, 0.35);
+  color: var(--accent-gold);
   font-weight: 500;
 }
 
@@ -246,9 +246,9 @@ a:hover {
 }
 
 .nav-link.active {
-  background-color: rgba(52, 89, 237, 0.1);
-  color: var(--accent-blue);
-  border-left-color: var(--accent-blue);
+  background-color: rgba(122, 31, 43, 0.3);
+  color: var(--accent-gold);
+  border-left-color: var(--accent-gold);
   font-weight: 500;
 }
 
@@ -295,7 +295,7 @@ a:hover {
   font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 4px;
-  color: var(--accent-blue);
+  color: var(--accent-gold);
 }
 
 .page-subtitle {
@@ -336,7 +336,7 @@ a:hover {
   display: inline-block;
   width: 4px;
   height: 1em;
-  background: var(--accent-teal);
+  background: var(--accent-primary-bright);
   border-radius: 2px;
   margin-right: 10px;
   vertical-align: middle;
@@ -377,7 +377,7 @@ a:hover {
 
 .stat-label {
   font-size: 0.8rem;
-  color: var(--accent-purple);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 8px;
@@ -386,8 +386,10 @@ a:hover {
 
 .stat-value {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 800;
   font-family: var(--font-mono);
+  color: var(--accent-gold);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Career Stats Grid - compact 6-column layout */
@@ -450,7 +452,7 @@ table {
 }
 
 thead {
-  background: linear-gradient(135deg, rgba(52, 89, 237, 0.08) 0%, rgba(32, 201, 151, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(122, 31, 43, 0.18) 0%, rgba(122, 31, 43, 0.05) 100%);
 }
 
 th {
@@ -460,7 +462,7 @@ th {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--accent-blue);
+  color: var(--text-secondary);
   border-bottom: 1px solid var(--border-color);
   white-space: nowrap;
   cursor: pointer;
@@ -487,12 +489,12 @@ th.sortable::after {
 
 th.sort-asc::after {
   border-top: none;
-  border-bottom: 4px solid var(--accent-primary);
+  border-bottom: 4px solid var(--accent-gold);
   opacity: 1;
 }
 
 th.sort-desc::after {
-  border-top: 4px solid var(--accent-primary);
+  border-top: 4px solid var(--accent-gold);
   opacity: 1;
 }
 
@@ -501,6 +503,10 @@ td {
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
   text-align: center;
+}
+
+tr:nth-child(even) {
+  background-color: var(--bg-tertiary);
 }
 
 tr:hover {
@@ -613,7 +619,7 @@ td.dynamic-rank {
 
 .year-btn:hover {
   background-color: var(--bg-hover);
-  border-color: var(--accent-primary);
+  border-color: var(--accent-primary-bright);
   color: var(--text-primary);
 }
 
@@ -641,7 +647,7 @@ td.dynamic-rank {
 }
 
 .member-card:hover {
-  border-color: var(--accent-primary);
+  border-color: var(--accent-primary-bright);
   transform: translateY(-2px);
 }
 
@@ -660,7 +666,7 @@ td.dynamic-rank {
   margin: 0 auto 12px;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent-primary);
+  color: var(--accent-primary-bright);
 }
 
 .member-card-name {
@@ -686,7 +692,7 @@ td.dynamic-rank {
   align-items: center;
   gap: 16px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(249, 168, 37, 0.08) 0%, rgba(255, 107, 107, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(240, 195, 77, 0.08) 0%, rgba(220, 61, 82, 0.05) 100%);
   border-radius: 12px;
   margin-bottom: 12px;
   border-left: 4px solid var(--accent-gold);
