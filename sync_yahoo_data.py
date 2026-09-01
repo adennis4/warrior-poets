@@ -12,9 +12,18 @@ import json
 import re
 from pathlib import Path
 
+import openpyxl
+
 from yahoo_fantasy import YahooFantasyAPI, extract_weekly_points
 
 DATA_JS_PATH = Path(__file__).parent / "js" / "data.js"
+BACKUP_XLSX_PATH = Path(__file__).parent / "WarriorPoets_Backup.xlsx"
+
+# Points table layout in the backup workbook: row 6-19 is the 14-team weekly
+# points grid, column E (5) is week 1, column U (21) is week 17.
+POINTS_TABLE_FIRST_ROW = 6
+POINTS_TABLE_LAST_ROW = 19
+POINTS_TABLE_FIRST_WEEK_COL = 5
 
 
 def read_data_js():
@@ -33,6 +42,60 @@ def write_data_js(data):
     json_str = json.dumps(data, indent=2)
     content = f"const LEAGUE_DATA = {json_str};\n"
     DATA_JS_PATH.write_text(content)
+
+
+def write_backup_xlsx(year, weekly_points, dry_run=False):
+    """Write weekly points into the matching season tab of the backup xlsx.
+
+    The tab's formulas (totals, ranks, sidebets) recalculate on their own
+    from these raw point values, so only the weekly point cells are touched.
+    """
+    if not BACKUP_XLSX_PATH.exists():
+        print(f"\n[backup xlsx] {BACKUP_XLSX_PATH} not found, skipping.")
+        return
+
+    wb = openpyxl.load_workbook(BACKUP_XLSX_PATH, data_only=False)
+    if year not in wb.sheetnames:
+        print(f"\n[backup xlsx] No '{year}' tab in {BACKUP_XLSX_PATH.name}, skipping.")
+        return
+
+    ws = wb[year]
+
+    owner_row = {}
+    for row in range(POINTS_TABLE_FIRST_ROW, POINTS_TABLE_LAST_ROW + 1):
+        owner = ws.cell(row=row, column=4).value  # column D
+        if owner:
+            owner_row[owner] = row
+
+    print(f"\n--- Backup xlsx changes for {year} ---")
+    changed = False
+    for member, weeks in weekly_points.items():
+        row = owner_row.get(member)
+        if row is None:
+            print(f"  Skipping {member}: no matching row in the '{year}' tab")
+            continue
+        for week_str, points in weeks.items():
+            week_num = int(week_str)
+            if week_num < 1 or week_num > 17:
+                continue
+            col = POINTS_TABLE_FIRST_WEEK_COL + week_num - 1
+            cell = ws.cell(row=row, column=col)
+            if cell.value != points:
+                print(f"  {member} Week {week_str}: {cell.value} → {points}")
+                changed = True
+                if not dry_run:
+                    cell.value = points
+
+    if not changed:
+        print("  No changes.")
+
+    if dry_run:
+        print("[DRY RUN] No changes written.")
+        return
+
+    if changed:
+        wb.save(BACKUP_XLSX_PATH)
+        print(f"Saved {BACKUP_XLSX_PATH}")
 
 
 def sync_season(year, dry_run=False):
@@ -74,6 +137,8 @@ def sync_season(year, dry_run=False):
                     print(f"  {member} Week {week}: NEW → {points}")
                 else:
                     print(f"  {member} Week {week}: {old_val} → {points}")
+
+    write_backup_xlsx(year, weekly_points, dry_run)
 
     if dry_run:
         print("\n[DRY RUN] No changes written.")
