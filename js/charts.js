@@ -53,7 +53,7 @@ const defaultOptions = {
       backgroundColor: '#1c171f',
       titleColor: '#f2ede4',
       bodyColor: '#b8ac95',
-      borderColor: '#332b3a',
+      borderColor: '#dc3d52',
       borderWidth: 1,
       cornerRadius: 8,
       titleFont: {
