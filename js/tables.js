@@ -124,10 +124,10 @@ class SortableTable {
     const totalRows = sorted.length;
     sorted.forEach((item, index) => {
       this.tbody.appendChild(item.element);
+      const rank = this.currentOrder === 'desc' ? index + 1 : totalRows - index;
       // Update dynamic rank cells - reverse if sorted ascending
       const rankCell = item.element.querySelector('td.dynamic-rank');
       if (rankCell) {
-        const rank = this.currentOrder === 'desc' ? index + 1 : totalRows - index;
         let rankDisplay = String(rank);
         if (this.movementKey && item.rowObj) {
           rankDisplay += WP.formatRankMovement(item.rowObj[this.movementKey]);
@@ -143,7 +143,7 @@ class SortableTable {
       // Recompute the rank-tier row class against the new post-sort order
       if (this.showRankTier) {
         const resolvedRank = this.showRankTier === true
-          ? index + 1
+          ? rank
           : (item.rowObj ? item.rowObj[this.showRankTier] : null);
         const tier = WP.getRankTier(resolvedRank, totalRows);
         item.element.classList.remove('rank-tier-top', 'rank-tier-bottom');
