@@ -11,7 +11,10 @@ const {
   formatRank,
   calculateTotalPoints,
   calculateTotalSidebets,
-  calculateLowManCount
+  calculateLowManCount,
+  getRankTier,
+  formatRankMovement,
+  computeRankMovement
 } = require('./utils');
 
 describe('formatNumber', () => {
@@ -194,5 +197,84 @@ describe('calculateLowManCount', () => {
 
   test('handles empty object', () => {
     expect(calculateLowManCount({})).toBe(0);
+  });
+});
+
+describe('getRankTier', () => {
+  test('returns "top" for ranks in the top half', () => {
+    expect(getRankTier(1, 14)).toBe('top');
+    expect(getRankTier(7, 14)).toBe('top');
+  });
+
+  test('returns "bottom" for ranks in the bottom half', () => {
+    expect(getRankTier(8, 14)).toBe('bottom');
+    expect(getRankTier(14, 14)).toBe('bottom');
+  });
+
+  test('handles odd totals by rounding the top half up', () => {
+    expect(getRankTier(1, 5)).toBe('top');
+    expect(getRankTier(3, 5)).toBe('top');
+    expect(getRankTier(4, 5)).toBe('bottom');
+  });
+
+  test('returns null for missing rank or total', () => {
+    expect(getRankTier(null, 14)).toBe(null);
+    expect(getRankTier(1, 0)).toBe(null);
+    expect(getRankTier(undefined, 14)).toBe(null);
+  });
+});
+
+describe('formatRankMovement', () => {
+  test('renders an up arrow for "up"', () => {
+    expect(formatRankMovement('up')).toBe(' <span class="rank-arrow rank-arrow-up">▲</span>');
+  });
+
+  test('renders a down arrow for "down"', () => {
+    expect(formatRankMovement('down')).toBe(' <span class="rank-arrow rank-arrow-down">▼</span>');
+  });
+
+  test('renders a flat dash for "same"', () => {
+    expect(formatRankMovement('same')).toBe(' <span class="rank-arrow rank-arrow-same">—</span>');
+  });
+
+  test('renders nothing for null/undefined', () => {
+    expect(formatRankMovement(null)).toBe('');
+    expect(formatRankMovement(undefined)).toBe('');
+  });
+});
+
+describe('computeRankMovement', () => {
+  test('returns null movement for every member on week 1', () => {
+    const weeklyPoints = {
+      A: { '1': 100 },
+      B: { '1': 90 }
+    };
+    expect(computeRankMovement(weeklyPoints, 1)).toEqual({ A: null, B: null });
+  });
+
+  test('returns null movement when there is no completed week yet', () => {
+    const weeklyPoints = { A: {}, B: {} };
+    expect(computeRankMovement(weeklyPoints, 0)).toEqual({ A: null, B: null });
+  });
+
+  test('detects a member moving up in rank', () => {
+    // Week 1: A=100 (rank 1), B=90 (rank 2). Week 2: A=100+10=110 (rank 2), B=90+50=140 (rank 1).
+    const weeklyPoints = {
+      A: { '1': 100, '2': 10 },
+      B: { '1': 90, '2': 50 }
+    };
+    const movement = computeRankMovement(weeklyPoints, 2);
+    expect(movement.B).toBe('up');
+    expect(movement.A).toBe('down');
+  });
+
+  test('detects an unchanged rank as "same"', () => {
+    const weeklyPoints = {
+      A: { '1': 100, '2': 20 },
+      B: { '1': 90, '2': 10 }
+    };
+    const movement = computeRankMovement(weeklyPoints, 2);
+    expect(movement.A).toBe('same');
+    expect(movement.B).toBe('same');
   });
 });
