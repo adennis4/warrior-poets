@@ -10,7 +10,7 @@
 
   --text-primary: #f2ede4;
   --text-secondary: #b8ac95;
-  --text-muted: #6a6070;
+  --text-muted: #847b8d;
 
   /* accent-primary: large fills/backgrounds/borders (crimson).
      accent-primary-bright: anywhere crimson is foreground TEXT or a thin/
@@ -314,7 +314,7 @@ a:hover {
   border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .card-header {
@@ -372,7 +372,7 @@ a:hover {
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .stat-label {
@@ -506,7 +506,7 @@ td {
 }
 
 tr:nth-child(even) {
-  background-color: var(--bg-tertiary);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 tr:hover {
