@@ -460,6 +460,38 @@ table {
   min-width: 1400px;
 }
 
+/* Freeze the Owner column while scrolling the wide weekly breakdown tables
+   horizontally. Sticky cells need an opaque background of their own -
+   otherwise the week columns sliding underneath would show through the
+   gaps - so each state (default row, zebra row, hover, header) gets its
+   matching background repeated here rather than left transparent. */
+#weeklyPoints th:first-child,
+#weeklyPoints td:first-child,
+#weeklySidebets th:first-child,
+#weeklySidebets td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border-color);
+}
+
+#weeklyPoints tr:nth-child(even) td:first-child,
+#weeklySidebets tr:nth-child(even) td:first-child {
+  background-color: var(--bg-tertiary);
+}
+
+#weeklyPoints tr:hover td:first-child,
+#weeklySidebets tr:hover td:first-child {
+  background-color: var(--bg-hover);
+}
+
+#weeklyPoints thead th:first-child,
+#weeklySidebets thead th:first-child {
+  z-index: 2;
+  background-color: var(--bg-secondary);
+}
+
 thead {
   background: linear-gradient(135deg, rgba(122, 31, 43, 0.18) 0%, rgba(122, 31, 43, 0.05) 100%);
 }
