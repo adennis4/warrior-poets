@@ -451,6 +451,15 @@ table {
   table-layout: fixed;
 }
 
+/* Wide weekly breakdown tables (Owner + 17 week columns + Total) must not
+   shrink to fit a narrow viewport - table-layout: fixed + width: 100% would
+   otherwise squeeze every column until the header labels overlap. Give them
+   a min-width so they overflow their .table-container and scroll instead. */
+#weeklyPoints,
+#weeklySidebets {
+  min-width: 1400px;
+}
+
 thead {
   background: linear-gradient(135deg, rgba(122, 31, 43, 0.18) 0%, rgba(122, 31, 43, 0.05) 100%);
 }
