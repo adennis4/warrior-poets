@@ -14,6 +14,10 @@
 
 **Do not push.** Per the user's explicit request, all commits in this plan stay local (`git commit`, never `git push`) until they've reviewed the result in a browser.
 
+**Post-Task-1 correction:** Task 1's code review caught two gaps in the original file audit this plan was based on, both since fixed (commits 13acc2c, fabe3e3 on `redesign/crimson-gold`):
+- `hall-of-fame.html` has its own inline `<style>` block that referenced the removed `--accent-blue`/`--accent-teal` tokens — a real regression (vanished timeline connector, wrong label color). This file was missing from every task's file list; it's now fixed as part of Task 1 and needs no further action.
+- `wagers.html` has 8 more `var(--accent-blue)` references beyond the hardcoded-hex sites originally caught in Task 3 below. Task 3's steps have been expanded to include them.
+
 ---
 
 ## File Structure
@@ -390,19 +394,37 @@ This recolors: the `.kalshi-link:hover`, `.btn-submit:hover`, and `.step-btn:hov
 - `.yahoo-login` / `.yahoo-login:hover` (`#6001d2` / `#4a01a3`) — Yahoo's own brand purple for the "Sign in with Yahoo" button.
 - `.odds-btn.no` (`#7c4dab`) — Kalshi's Yes/No market color convention, not a site theme color.
 
-- [ ] **Step 4: Verify wagers.html's remaining hex colors are only the intentionally-excluded ones**
+- [ ] **Step 4: Fix wagers.html's remaining `var(--accent-blue)` references**
+
+`wagers.html` has its own inline `<style>` block (like `hall-of-fame.html` did — see the note near the top of this plan) with 8 more references to the now-removed `--accent-blue` token, beyond the hardcoded-hex sites fixed in Step 3. Apply this table exactly (find-and-replace within `wagers.html`):
+
+| Selector (for context) | Old | New |
+|---|---|---|
+| `.kalshi-link` | `background: var(--accent-blue);` | `background: var(--accent-primary);` |
+| `.odds-btn.yes .odds-label` | `color: var(--accent-blue);` | `color: var(--positive);` |
+| `.odds-btn.yes .odds-price` | `color: var(--accent-blue);` | `color: var(--positive);` |
+| `.order-side.yes` | `color: var(--accent-blue);` | `color: var(--positive);` |
+| `.order-adjust:hover` | `border-color: var(--accent-blue);` | `border-color: var(--accent-primary-bright);` |
+| `.btn-submit` (base rule, not `:hover`) | `background: var(--accent-blue);` | `background: var(--accent-primary);` |
+| `.step-number` | `color: var(--accent-blue);` | `color: var(--accent-gold);` |
+| `.step-btn` (base rule, not `:hover`) | `background: var(--accent-blue);` | `background: var(--accent-primary);` |
+
+The `.odds-btn.yes` / `.order-side.yes` mapping to `--positive` (green) is a deliberate choice, not just "whatever was closest": it gives the Kalshi "Yes" side a clear green semantic (paired against `.odds-btn.no`'s existing untouched purple, and `.order-side.no`'s neutral `--text-secondary`), consistent with how the rest of the site already uses green/red for positive/negative.
+
+- [ ] **Step 5: Verify wagers.html's remaining hex/var colors are only the intentionally-excluded ones**
 
 ```bash
 grep -nE "#[0-9a-fA-F]{6}\b" wagers.html
+grep -nE "var\(--accent-blue|var\(--accent-teal|var\(--accent-purple|var\(--accent-pink|var\(--accent-orange|var\(--accent-secondary" wagers.html
 ```
 
-Expected output: only the team gradients, `.odds-btn.no`, and `.yahoo-login`/`:hover` lines listed above. If anything else shows up, it was missed in Step 3 — map it using the same old→new pairs from Task 1/2.
+Expected output for the first command: only the team gradients, `.odds-btn.no`, and `.yahoo-login`/`:hover` lines listed above. Expected output for the second: empty. If anything else shows up, it was missed in Step 3 or Step 4 — map it using the same old→new pairs from Task 1/2/this task.
 
-- [ ] **Step 5: Visual check**
+- [ ] **Step 6: Visual check**
 
 With the local server still running (or restart it), open `http://localhost:8930/members/cp.html` and `http://localhost:8930/wagers.html`, screenshot both, confirm charts and buttons read correctly against the dark theme and the team-color/Yahoo-brand elements are untouched.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add members/*.html wagers.html
