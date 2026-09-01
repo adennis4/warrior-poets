@@ -197,7 +197,7 @@
               {
                 label: 'Standing',
                 data: chartStandings,
-                borderColor: '#868e96',
+                borderColor: '#9a8f7a',
                 backgroundColor: 'transparent',
                 borderWidth: 2,
                 borderDash: [5, 5],
@@ -219,14 +219,14 @@
               legend: {
                 position: 'bottom',
                 labels: {
-                  color: '#5a5a7a'
+                  color: '#b8ac95'
                 }
               },
               tooltip: {
-                backgroundColor: '#ffffff',
-                titleColor: '#1a1a2e',
-                bodyColor: '#5a5a7a',
-                borderColor: '#e0e4ed',
+                backgroundColor: '#1c171f',
+                titleColor: '#f2ede4',
+                bodyColor: '#b8ac95',
+                borderColor: '#dc3d52',
                 borderWidth: 1,
                 callbacks: {
                   label: function(context) {
@@ -244,8 +244,8 @@
             },
             scales: {
               x: {
-                grid: { color: '#e0e4ed' },
-                ticks: { color: '#5a5a7a' }
+                grid: { color: 'rgba(255,255,255,0.06)' },
+                ticks: { color: '#b8ac95' }
               },
               y: {
                 type: 'linear',
@@ -256,10 +256,10 @@
                 title: {
                   display: true,
                   text: 'Points',
-                  color: '#5a5a7a'
+                  color: '#b8ac95'
                 },
-                grid: { color: '#e0e4ed' },
-                ticks: { color: '#5a5a7a' }
+                grid: { color: 'rgba(255,255,255,0.06)' },
+                ticks: { color: '#b8ac95' }
               },
               y1: {
                 type: 'linear',
@@ -271,11 +271,11 @@
                 title: {
                   display: true,
                   text: 'Standing',
-                  color: '#5a5a7a'
+                  color: '#b8ac95'
                 },
                 grid: { drawOnChartArea: false },
                 ticks: { 
-                  color: '#666666',
+                  color: '#b8ac95',
                   stepSize: 1
                 }
               }
