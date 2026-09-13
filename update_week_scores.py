@@ -92,7 +92,10 @@ def compute_season_totals(values_by_member, tie_break_order):
         weeklySidebets, summed across however many weeks are present.
     Returns {member: {"total": ..., "rank": ...}}.
     """
-    totals = {member: sum(weeks.values()) for member, weeks in values_by_member.items()}
+    totals = {
+        member: round(sum(weeks.values()), 2)
+        for member, weeks in values_by_member.items()
+    }
     ranks = rank_members_by_score(totals, tie_break_order)
     return {
         member: {"total": totals[member], "rank": ranks[member]}
@@ -124,6 +127,8 @@ def update_week(data, year, week, scores):
     recompute the season's running standings/sidebetStandings from every
     week entered so far. Returns `data`.
     """
+    validate_scores(scores, year)
+
     tie_break_order = list(TEAM_NAME_TO_MEMBER[year].values())
     week_key = str(week)
 

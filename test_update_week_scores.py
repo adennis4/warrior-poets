@@ -1,5 +1,9 @@
 """Tests for update_week_scores.py."""
 
+import json
+import os
+import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -11,6 +15,7 @@ from update_week_scores import (
     compute_low_man_count,
     validate_scores,
     update_week,
+    main,
     TEAM_NAME_TO_MEMBER,
 )
 
@@ -71,6 +76,21 @@ class TestComputeSeasonTotals(unittest.TestCase):
         self.assertAlmostEqual(result["B"]["total"], 165.0)
         self.assertEqual(result["A"]["rank"], 1)
         self.assertEqual(result["B"]["rank"], 2)
+
+    def test_season_level_tie_broken_by_position_in_fixed_order(self):
+        # Both members total 100.0 across the season, even though neither
+        # week is individually tied - this exercises compute_season_totals'
+        # own tie-breaking, not just rank_members_by_score in isolation.
+        values = {
+            "A": {"1": 50.0, "2": 50.0},
+            "B": {"1": 60.0, "2": 40.0},
+        }
+        order = ["B", "A"]  # B listed before A -> B wins the tie
+        result = compute_season_totals(values, order)
+        self.assertEqual(result["A"]["total"], 100.0)
+        self.assertEqual(result["B"]["total"], 100.0)
+        self.assertEqual(result["B"]["rank"], 1)
+        self.assertEqual(result["A"]["rank"], 2)
 
 
 class TestComputeLowManCount(unittest.TestCase):
@@ -160,6 +180,97 @@ class TestUpdateWeekIntegration(unittest.TestCase):
         self.assertEqual(season["sidebetStandings"]["B"]["total"], 120)
         self.assertEqual(season["sidebetStandings"]["A"]["lowManCount"], 0)
         self.assertEqual(season["sidebetStandings"]["B"]["lowManCount"], 0)
+
+    @patch.dict(
+        "update_week_scores.TEAM_NAME_TO_MEMBER",
+        {"2026": {"Team A": "A", "Team B": "B"}},
+        clear=True,
+    )
+    def test_three_consecutive_weeks_accumulate(self):
+        update_week(self.data, "2026", 1, {"A": 100.0, "B": 90.0})
+        update_week(self.data, "2026", 2, {"A": 80.0, "B": 95.0})
+        update_week(self.data, "2026", 3, {"A": 70.0, "B": 60.0})
+
+        season = self.data["seasons"]["2026"]
+        self.assertEqual(season["standings"]["A"]["totalPoints"], 250.0)
+        self.assertEqual(season["standings"]["B"]["totalPoints"], 245.0)
+        self.assertEqual(season["standings"]["A"]["pointsRank"], 1)
+        self.assertEqual(season["standings"]["B"]["pointsRank"], 2)
+        # Week 1: A rank1 (+65), B rank2 (+55).
+        # Week 2: B rank1 (+65), A rank2 (+55).
+        # Week 3: A rank1 (+65), B rank2 (+55).
+        # A: 65+55+65=185, B: 55+65+55=175.
+        self.assertEqual(season["sidebetStandings"]["A"]["total"], 185)
+        self.assertEqual(season["sidebetStandings"]["B"]["total"], 175)
+        self.assertEqual(season["sidebetStandings"]["A"]["lowManCount"], 0)
+        self.assertEqual(season["sidebetStandings"]["B"]["lowManCount"], 0)
+
+    @patch.dict(
+        "update_week_scores.TEAM_NAME_TO_MEMBER",
+        {"2026": {"Team A": "A", "Team B": "B"}},
+        clear=True,
+    )
+    def test_raises_when_scores_dont_match_roster(self):
+        with self.assertRaises(ValueError):
+            update_week(self.data, "2026", 1, {"A": 100.0, "NotARealMember": 90.0})
+
+
+class TestMainSmoke(unittest.TestCase):
+    """
+    Smoke-tests main(): the CLI entry point, which otherwise has zero
+    coverage even though it's the only thing actually invoked from the
+    command line. Mocks file I/O (read_data_js/write_data_js) and uses a
+    real temp file for the scores.json argv path, but leaves
+    validate_scores as the real function (wrapped, so we can assert on
+    calls) since we want to confirm the actual validation wiring, not a
+    stand-in for it.
+    """
+
+    @patch.dict(
+        "update_week_scores.TEAM_NAME_TO_MEMBER",
+        {"2026": {"Team A": "A", "Team B": "B"}},
+        clear=True,
+    )
+    @patch("update_week_scores.write_data_js")
+    @patch("update_week_scores.read_data_js")
+    def test_main_validates_and_bootstraps_new_season(self, mock_read, mock_write):
+        # Simulates a brand new season: no "2026" key under "seasons" yet.
+        mock_read.return_value = {"seasons": {}}
+
+        scores = {"A": 100.0, "B": 90.0}
+        fd, scores_path = tempfile.mkstemp(suffix=".json")
+        try:
+            with os.fdopen(fd, "w") as f:
+                json.dump(scores, f)
+
+            real_validate_scores = validate_scores
+            with patch(
+                "update_week_scores.validate_scores", wraps=real_validate_scores
+            ) as mock_validate:
+                with patch.object(
+                    sys, "argv", ["update_week_scores.py", "2026", "1", scores_path]
+                ):
+                    main()
+        finally:
+            os.unlink(scores_path)
+
+        # validate_scores is called once explicitly in main() and once more
+        # inside update_week (defense-in-depth per the plan) - both calls
+        # succeed as no-ops since the scores are valid, so this should be
+        # exactly 2 calls, not an error.
+        self.assertEqual(mock_validate.call_count, 2)
+        mock_validate.assert_called_with(scores, "2026")
+
+        # New-season bootstrap branch: "2026" should now exist under
+        # "seasons" and have been populated by update_week.
+        mock_write.assert_called_once()
+        written_data = mock_write.call_args[0][0]
+        self.assertIn("2026", written_data["seasons"])
+        season = written_data["seasons"]["2026"]
+        self.assertEqual(season["standings"]["A"]["totalPoints"], 100.0)
+        self.assertEqual(season["standings"]["B"]["totalPoints"], 90.0)
+        self.assertEqual(season["weeklySidebets"]["A"]["1"], 65)
+        self.assertEqual(season["weeklySidebets"]["B"]["1"], 55)
 
 
 if __name__ == "__main__":
