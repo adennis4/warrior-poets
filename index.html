@@ -173,7 +173,11 @@
     // Pre-sort data by totalPoints descending so initial render has correct ranks
     const pointsSortedData = [...standingsData]
       .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
-      .map(m => ({ ...m, pointsMovement: pointsMovement[m.name] || null }));
+      .map(m => ({
+        ...m,
+        pointsMovement: pointsMovement[m.name] || null,
+        weeklyAvg: hasData && m.totalPoints ? m.totalPoints / weeksCompleted : null
+      }));
 
     createTable('pointsStandingsTable', {
       tableId: 'pointsTable',
@@ -183,7 +187,8 @@
       columns: [
         { key: 'rank', label: 'Rank', type: 'dynamicRank', sortable: false, movementKey: 'pointsMovement' },
         { key: 'name', label: 'Owner', type: 'member' },
-        { key: 'totalPoints', label: 'Points', type: 'number', decimals: 1 }
+        { key: 'totalPoints', label: 'Points', type: 'number', decimals: 1 },
+        { key: 'weeklyAvg', label: 'Weekly Avg', type: 'number', decimals: 1 }
       ],
       data: pointsSortedData
     });
