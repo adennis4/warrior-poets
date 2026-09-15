@@ -31,18 +31,6 @@
             <div class="stat-change" id="sidebetLeaderTotal"></div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Week</div>
-            <div class="stat-value" id="weeksCompleted">—</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Average Points</div>
-            <div class="stat-value" id="avgPoints">—</div>
-          </div>
-        </div>
-
-        <!-- Season Awards -->
-        <div class="grid-2" style="margin-bottom: 24px;">
-          <div class="stat-card">
             <div class="stat-label">Trophy Engraver</div>
             <div class="stat-value" id="trophyEngraverName">—</div>
             <div class="stat-change" id="trophyEngraverDetail"></div>
@@ -156,8 +144,6 @@
     document.getElementById('sidebetLeaderTotal').textContent = hasData ? WP.formatDelta(topSidebet?.total, 0) : '—';
     document.getElementById('sidebetLeaderTotal').className = 'stat-change ' + (hasData ? WP.getValueClass(topSidebet?.total) : '');
 
-    document.getElementById('weeksCompleted').textContent = weeksCompleted || '—';
-
     // Trophy Engraver - whoever holds the season's lowest single-week score so far
     let trophyEngraver = null;
     Object.entries(season2026.weeklyPoints).forEach(([name, weeks]) => {
@@ -182,11 +168,6 @@
     document.getElementById('chugTallyCard').innerHTML = chugTally.length
       ? chugTally.map(m => `<div class="chug-tally-entry">${m.name} ${'🍺'.repeat(m.count)}</div>`).join('')
       : '<div class="chug-tally-entry">—</div>';
-
-    // Average points per team
-    const totalPointsSum = standingsData.reduce((sum, m) => sum + (m.totalPoints || 0), 0);
-    const avgPoints = hasData ? totalPointsSum / standingsData.length : null;
-    document.getElementById('avgPoints').textContent = hasData ? WP.formatNumber(avgPoints, 1) : '—';
 
     // Create Points Standings Table - rank by points
     const pointsSorted = [...standingsData].sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
