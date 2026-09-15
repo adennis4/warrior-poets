@@ -812,22 +812,15 @@ tr.rank-tier-bottom td:first-child {
   gap: 4px;
 }
 
-.awards-row {
+.chug-tally-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 4px 16px;
 }
 
-.award-label {
-  font-size: 0.8rem;
+.chug-tally-entry {
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 12px;
-}
-
-.award-entry {
-  margin-top: 4px;
 }
 
 /* Week columns for weekly data */

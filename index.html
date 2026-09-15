@@ -41,14 +41,15 @@
         </div>
 
         <!-- Season Awards -->
-        <div class="awards-row" style="margin-bottom: 24px;">
-          <div class="hof-champion">
-            <div class="award-label">Trophy Engraver</div>
-            <div id="trophyEngraverCard"></div>
+        <div class="grid-2" style="margin-bottom: 24px;">
+          <div class="stat-card">
+            <div class="stat-label">Trophy Engraver</div>
+            <div class="stat-value" id="trophyEngraverName">—</div>
+            <div class="stat-change" id="trophyEngraverDetail"></div>
           </div>
-          <div class="hof-champion">
-            <div class="award-label">Chug Tally</div>
-            <div id="chugTallyCard"></div>
+          <div class="stat-card">
+            <div class="stat-label">Chug Tally</div>
+            <div class="chug-tally-list" id="chugTallyCard"></div>
           </div>
         </div>
 
@@ -167,10 +168,10 @@
       });
     });
 
-    document.getElementById('trophyEngraverCard').innerHTML = trophyEngraver ? `
-      <div class="hof-name">${trophyEngraver.name}</div>
-      <div class="hof-years">${WP.formatNumber(trophyEngraver.score, 2)} pts — Week ${trophyEngraver.week}</div>
-    ` : '<div class="hof-years">—</div>';
+    document.getElementById('trophyEngraverName').textContent = trophyEngraver?.name || '—';
+    document.getElementById('trophyEngraverDetail').textContent = trophyEngraver
+      ? `${WP.formatNumber(trophyEngraver.score, 2)} pts — Week ${trophyEngraver.week}`
+      : '';
 
     // Chug Tally - one beer per week a member finished last in points
     const chugTally = Object.entries(season2026.sidebetStandings)
@@ -179,8 +180,8 @@
       .sort((a, b) => b.count - a.count);
 
     document.getElementById('chugTallyCard').innerHTML = chugTally.length
-      ? chugTally.map(m => `<div class="hof-years award-entry">${m.name} ${'🍺'.repeat(m.count)}</div>`).join('')
-      : '<div class="hof-years">—</div>';
+      ? chugTally.map(m => `<div class="chug-tally-entry">${m.name} ${'🍺'.repeat(m.count)}</div>`).join('')
+      : '<div class="chug-tally-entry">—</div>';
 
     // Average points per team
     const totalPointsSum = standingsData.reduce((sum, m) => sum + (m.totalPoints || 0), 0);
