@@ -170,26 +170,22 @@
       : '<div class="chug-tally-entry">—</div>';
 
     // Create Points Standings Table - rank by points
-    const pointsSorted = [...standingsData].sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
-    const pointsWithRank = standingsData.map((m) => ({
-      ...m,
-      place: null,  // From Yahoo league standings during season
-      pointsRank: hasData ? pointsSorted.findIndex(p => p.name === m.name) + 1 : null,
-      pointsMovement: pointsMovement[m.name] || null
-    }));
+    // Pre-sort data by totalPoints descending so initial render has correct ranks
+    const pointsSortedData = [...standingsData]
+      .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0))
+      .map(m => ({ ...m, pointsMovement: pointsMovement[m.name] || null }));
 
     createTable('pointsStandingsTable', {
       tableId: 'pointsTable',
-      defaultSort: 'place',
-      defaultOrder: 'asc',
-      showRankTier: 'pointsRank',
+      defaultSort: 'totalPoints',
+      defaultOrder: 'desc',
+      showRankTier: true,
       columns: [
-        { key: 'place', label: 'Rank', type: 'rank' },
+        { key: 'rank', label: 'Rank', type: 'dynamicRank', sortable: false, movementKey: 'pointsMovement' },
         { key: 'name', label: 'Owner', type: 'member' },
-        { key: 'totalPoints', label: 'Points', type: 'number', decimals: 1 },
-        { key: 'pointsRank', label: 'Pts Rank', type: 'rank', movementKey: 'pointsMovement' }
+        { key: 'totalPoints', label: 'Points', type: 'number', decimals: 1 }
       ],
-      data: pointsWithRank
+      data: pointsSortedData
     });
 
     // Create Sidebet Standings Table - rank by total (highest total = rank 1)
