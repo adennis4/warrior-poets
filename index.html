@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Warrior Poets Fantasy Football</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="stylesheet" href="css/styles.css?v28">
+  <link rel="stylesheet" href="css/styles.css?v29">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -37,6 +37,18 @@
           <div class="stat-card">
             <div class="stat-label">Average Points</div>
             <div class="stat-value" id="avgPoints">—</div>
+          </div>
+        </div>
+
+        <!-- Season Awards -->
+        <div class="awards-row" style="margin-bottom: 24px;">
+          <div class="hof-champion">
+            <div class="award-label">Trophy Engraver</div>
+            <div id="trophyEngraverCard"></div>
+          </div>
+          <div class="hof-champion">
+            <div class="award-label">Chug Tally</div>
+            <div id="chugTallyCard"></div>
           </div>
         </div>
 
@@ -144,6 +156,31 @@
     document.getElementById('sidebetLeaderTotal').className = 'stat-change ' + (hasData ? WP.getValueClass(topSidebet?.total) : '');
 
     document.getElementById('weeksCompleted').textContent = weeksCompleted || '—';
+
+    // Trophy Engraver - whoever holds the season's lowest single-week score so far
+    let trophyEngraver = null;
+    Object.entries(season2026.weeklyPoints).forEach(([name, weeks]) => {
+      Object.entries(weeks).forEach(([week, points]) => {
+        if (typeof points === 'number' && (!trophyEngraver || points < trophyEngraver.score)) {
+          trophyEngraver = { name, score: points, week };
+        }
+      });
+    });
+
+    document.getElementById('trophyEngraverCard').innerHTML = trophyEngraver ? `
+      <div class="hof-name">${trophyEngraver.name}</div>
+      <div class="hof-years">${WP.formatNumber(trophyEngraver.score, 2)} pts — Week ${trophyEngraver.week}</div>
+    ` : '<div class="hof-years">—</div>';
+
+    // Chug Tally - one beer per week a member finished last in points
+    const chugTally = Object.entries(season2026.sidebetStandings)
+      .map(([name, data]) => ({ name, count: data.lowManCount || 0 }))
+      .filter(m => m.count > 0)
+      .sort((a, b) => b.count - a.count);
+
+    document.getElementById('chugTallyCard').innerHTML = chugTally.length
+      ? chugTally.map(m => `<div class="hof-years award-entry">${m.name} ${'🍺'.repeat(m.count)}</div>`).join('')
+      : '<div class="hof-years">—</div>';
 
     // Average points per team
     const totalPointsSum = standingsData.reduce((sum, m) => sum + (m.totalPoints || 0), 0);
