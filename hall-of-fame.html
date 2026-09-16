@@ -577,7 +577,11 @@
       });
     });
 
+    // Only show members still active in the league - a past member's weeks
+    // still count toward who actually had the lowest score historically,
+    // they just don't get a card or leaderboard row of their own.
     const chugLeaderboard = Object.entries(chugCounts)
+      .filter(([name]) => !WP.isInactive(name))
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count);
 
