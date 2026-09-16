@@ -22,7 +22,7 @@
         
                 <div class="card" style="margin-top: 24px;">
           <div class="card-header">
-            <h2 class="card-title">Points & Standings by Season</h2>
+            <h2 class="card-title">Points Rank & Standings by Season</h2>
           </div>
           <div class="card-body">
             <div class="chart-container" style="height: 300px;">
@@ -163,17 +163,19 @@
         var pointsData = allTime.pointsTotals[MEMBER] || {};
         var standingsData = allTime.yearEndStandings[MEMBER] || {};
         var seasons = LEAGUE_DATA.seasons;
+        var seasons = LEAGUE_DATA.seasons;
         var years = LEAGUE_DATA.years;
         var chartYears = [];
-        var chartPoints = [];
+        var chartPointsRank = [];
         var chartStandings = [];
         
         for (var i = 0; i < years.length; i++) {
           var year = years[i];
           if (pointsData.yearly && pointsData.yearly[year] !== undefined) {
             var seasonStandings = seasons[year] && seasons[year].standings ? seasons[year].standings[MEMBER] : null;
+            var seasonStandings = seasons[year] && seasons[year].standings ? seasons[year].standings[MEMBER] : null;
             chartYears.push(year);
-            chartPoints.push(pointsData.yearly[year]);
+            chartPointsRank.push(seasonStandings ? seasonStandings.pointsRank : null);
             chartStandings.push(standingsData.yearly ? standingsData.yearly[year] : null);
           }
         }
@@ -186,8 +188,8 @@
             labels: chartYears,
             datasets: [
               {
-                label: 'Points',
-                data: chartPoints,
+                label: 'Points Rank',
+                data: chartPointsRank,
                 borderColor: WPCharts.colors.members[MEMBER] || WPCharts.colors.primary,
                 backgroundColor: 'transparent',
                 borderWidth: 2,
@@ -232,14 +234,11 @@
                 borderWidth: 1,
                 callbacks: {
                   label: function(context) {
-                    if (context.dataset.label === 'Standing') {
-                      var val = context.raw;
-                      if (val === null) return 'Standing: —';
-                      var suffix = ['th', 'st', 'nd', 'rd'];
-                      var v = val % 100;
-                      return 'Standing: ' + val + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
-                    }
-                    return 'Points: ' + context.raw.toLocaleString();
+                    var val = context.raw;
+                    if (val === null) return context.dataset.label + ': —';
+                    var suffix = ['th', 'st', 'nd', 'rd'];
+                    var v = val % 100;
+                    return context.dataset.label + ': ' + val + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
                   }
                 }
               }
@@ -253,15 +252,19 @@
                 type: 'linear',
                 display: true,
                 position: 'left',
-                min: 1100,
-                max: 1900,
+                reverse: true,
+                min: 1,
+                max: 14,
                 title: {
                   display: true,
-                  text: 'Points',
+                  text: 'Points Rank',
                   color: '#b8ac95'
                 },
                 grid: { color: 'rgba(255,255,255,0.06)' },
-                ticks: { color: '#b8ac95' }
+                ticks: {
+                  color: '#b8ac95',
+                  stepSize: 1
+                }
               },
               y1: {
                 type: 'linear',
