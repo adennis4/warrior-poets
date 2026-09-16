@@ -149,6 +149,11 @@
       color: var(--text-primary);
     }
 
+    .chug-poet-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
     .chug-leaderboard-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -605,15 +610,17 @@
     `).join('');
 
     const chugRecordsHtml = `
-      <div class="record-card">
-        <div class="record-card-title">Drunkest Poet</div>
-        <div class="record-card-value">${maxChugs}</div>
-        <div class="record-card-detail">${drunkestPoets.join(', ')}</div>
-      </div>
-      <div class="record-card">
-        <div class="record-card-title">Soberest Poet</div>
-        <div class="record-card-value">${minChugs}</div>
-        <div class="record-card-detail">${soberestPoets.join(', ')}</div>
+      <div class="chug-poet-cards">
+        <div class="record-card">
+          <div class="record-card-title">Drunkest Poet</div>
+          <div class="record-card-value">${maxChugs}</div>
+          <div class="record-card-detail">${drunkestPoets.join(', ')}</div>
+        </div>
+        <div class="record-card">
+          <div class="record-card-title">Soberest Poet</div>
+          <div class="record-card-value">${minChugs}</div>
+          <div class="record-card-detail">${soberestPoets.join(', ')}</div>
+        </div>
       </div>
       <div class="chug-leaderboard-card">
         <div class="record-card-title">All-Time Chug Leaderboard</div>
