@@ -148,6 +148,38 @@
       color: var(--text-primary);
     }
 
+    .chug-leaderboard-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .chug-leaderboard-row:last-child {
+      border-bottom: none;
+    }
+    .chug-leaderboard-rank {
+      width: 24px;
+      text-align: right;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+    .chug-leaderboard-name {
+      flex: 1;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .chug-leaderboard-count {
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+    .chug-footnote {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
     @media (max-width: 768px) {
       .stats-grid {
         display: grid;
@@ -210,6 +242,19 @@
         <div class="records-section">
           <h2>The Worst</h2>
           <div class="stats-grid" id="worstRecordsGrid"></div>
+        </div>
+
+        <!-- Beer Chug Hall of Fame -->
+        <div class="records-section">
+          <h2>Beer Chug Hall of Fame</h2>
+          <div class="stats-grid" id="chugRecordsGrid"></div>
+          <div class="card" style="margin-top: 16px;">
+            <div class="card-header">
+              <h2 class="card-title">All-Time Chug Leaderboard</h2>
+            </div>
+            <div class="card-body" id="chugLeaderboardList"></div>
+          </div>
+          <p class="chug-footnote">*Doesn't account for alternative beer chug rules (e.g. a cap of two chugs per person per year).</p>
         </div>
       </div>
     </main>
@@ -493,6 +538,76 @@
     `).join('');
 
     document.getElementById('worstRecordsGrid').innerHTML = worstRecordsHtml;
+
+    // Beer Chug Hall of Fame - one chug per member per week they finished
+    // last in points, going back to 2016 when the chug rule started.
+    const chugYears = LEAGUE_DATA.years.filter(year => Number(year) >= 2016);
+    const chugCounts = {};
+
+    chugYears.forEach(year => {
+      const weeklyPoints = seasons[year].weeklyPoints;
+
+      // Seed every member who played this season at 0 so a member who
+      // never finished last still shows up (relevant for Soberest Poet).
+      Object.keys(weeklyPoints).forEach(name => {
+        if (!(name in chugCounts)) chugCounts[name] = 0;
+      });
+
+      const weeksInYear = new Set();
+      Object.values(weeklyPoints).forEach(weeks => {
+        Object.keys(weeks).forEach(week => weeksInYear.add(week));
+      });
+
+      weeksInYear.forEach(week => {
+        let lowScore = Infinity;
+        let lowMembers = [];
+        Object.entries(weeklyPoints).forEach(([name, weeks]) => {
+          const score = weeks[week];
+          if (typeof score !== 'number') return;
+          if (score < lowScore) {
+            lowScore = score;
+            lowMembers = [name];
+          } else if (score === lowScore) {
+            lowMembers.push(name);
+          }
+        });
+        lowMembers.forEach(name => {
+          chugCounts[name] = (chugCounts[name] || 0) + 1;
+        });
+      });
+    });
+
+    const chugLeaderboard = Object.entries(chugCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+
+    const maxChugs = chugLeaderboard[0]?.count ?? 0;
+    const minChugs = chugLeaderboard[chugLeaderboard.length - 1]?.count ?? 0;
+    const drunkestPoets = chugLeaderboard.filter(m => m.count === maxChugs).map(m => m.name);
+    const soberestPoets = chugLeaderboard.filter(m => m.count === minChugs).map(m => m.name);
+
+    const chugRecordsHtml = `
+      <div class="record-card">
+        <div class="record-card-title">Drunkest Poet</div>
+        <div class="record-card-value">${maxChugs}</div>
+        <div class="record-card-detail">${drunkestPoets.join(', ')}</div>
+      </div>
+      <div class="record-card">
+        <div class="record-card-title">Soberest Poet</div>
+        <div class="record-card-value">${minChugs}</div>
+        <div class="record-card-detail">${soberestPoets.join(', ')}</div>
+      </div>
+    `;
+    document.getElementById('chugRecordsGrid').innerHTML = chugRecordsHtml;
+
+    const chugLeaderboardHtml = chugLeaderboard.map((m, i) => `
+      <div class="chug-leaderboard-row">
+        <span class="chug-leaderboard-rank">${i + 1}</span>
+        <span class="chug-leaderboard-name">${m.name}</span>
+        <span class="chug-leaderboard-count">${m.count} 🍺</span>
+      </div>
+    `).join('');
+    document.getElementById('chugLeaderboardList').innerHTML = chugLeaderboardHtml;
   </script>
 </body>
 </html>
