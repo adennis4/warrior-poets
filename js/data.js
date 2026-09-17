@@ -500,7 +500,7 @@ const LEAGUE_DATA = {
         "Marty": {
           "total": -205,
           "rank": 10,
-          "lowManCount": 2
+          "lowManCount": 4
         },
         "CP": {
           "total": 275,
@@ -510,12 +510,12 @@ const LEAGUE_DATA = {
         "Bank": {
           "total": 0,
           "rank": 4,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Andrew": {
           "total": -45,
           "rank": 5,
-          "lowManCount": 1
+          "lowManCount": 2
         },
         "Dues": {
           "total": -50,
@@ -525,12 +525,12 @@ const LEAGUE_DATA = {
         "Heath": {
           "total": -75,
           "rank": 8,
-          "lowManCount": 1
+          "lowManCount": 2
         },
         "Rizzo": {
           "total": -55,
           "rank": 7,
-          "lowManCount": 1
+          "lowManCount": 3
         }
       }
     },
@@ -985,37 +985,37 @@ const LEAGUE_DATA = {
         "Yonk": {
           "total": 60,
           "rank": 3,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Marty": {
           "total": -180,
           "rank": 10,
-          "lowManCount": 2
+          "lowManCount": 3
         },
         "CP": {
           "total": -55,
           "rank": 8,
-          "lowManCount": 2
+          "lowManCount": 3
         },
         "Bank": {
           "total": 75,
           "rank": 1,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Andrew": {
           "total": 45,
           "rank": 4,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Dues": {
           "total": -15,
           "rank": 7,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Heath": {
           "total": 65,
           "rank": 2,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Rizzo": {
           "total": 25,
@@ -1551,7 +1551,7 @@ const LEAGUE_DATA = {
         "Farber": {
           "total": 45,
           "rank": 4,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Heath": {
           "total": 30,
@@ -1561,12 +1561,12 @@ const LEAGUE_DATA = {
         "JB": {
           "total": 250,
           "rank": 2,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Woock": {
           "total": -215,
           "rank": 12,
-          "lowManCount": 0
+          "lowManCount": 4
         },
         "Rizzo": {
           "total": -90,
@@ -1576,7 +1576,7 @@ const LEAGUE_DATA = {
         "Marty": {
           "total": -65,
           "rank": 6,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Dues": {
           "total": 465,
@@ -1586,12 +1586,12 @@ const LEAGUE_DATA = {
         "Rich": {
           "total": -85,
           "rank": 7,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Bank": {
           "total": -185,
           "rank": 11,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Andrew": {
           "total": 115,
@@ -1601,12 +1601,12 @@ const LEAGUE_DATA = {
         "CP": {
           "total": -120,
           "rank": 9,
-          "lowManCount": 2
+          "lowManCount": 3
         },
         "Yonk": {
           "total": -145,
           "rank": 10,
-          "lowManCount": 0
+          "lowManCount": 3
         }
       }
     },
@@ -2142,27 +2142,27 @@ const LEAGUE_DATA = {
         "Heath": {
           "total": -145,
           "rank": 9,
-          "lowManCount": 0
+          "lowManCount": 3
         },
         "JB": {
           "total": 125,
           "rank": 4,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Woock": {
           "total": -315,
           "rank": 12,
-          "lowManCount": 0
+          "lowManCount": 3
         },
         "Rizzo": {
           "total": -5,
           "rank": 5,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Marty": {
           "total": -15,
           "rank": 7,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Dues": {
           "total": 295,
@@ -2172,27 +2172,27 @@ const LEAGUE_DATA = {
         "Rich": {
           "total": -165,
           "rank": 11,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Bank": {
           "total": -145,
           "rank": 10,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Andrew": {
           "total": 215,
           "rank": 3,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "CP": {
           "total": -95,
           "rank": 8,
-          "lowManCount": 2
+          "lowManCount": 1
         },
         "Yonk": {
           "total": -5,
           "rank": 6,
-          "lowManCount": 2
+          "lowManCount": 1
         }
       }
     },
@@ -2723,12 +2723,12 @@ const LEAGUE_DATA = {
         "Farber": {
           "total": -65,
           "rank": 7,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Heath": {
           "total": -125,
           "rank": 9,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "JB": {
           "total": 505,
@@ -2748,22 +2748,22 @@ const LEAGUE_DATA = {
         "Marty": {
           "total": -145,
           "rank": 10,
-          "lowManCount": 0
+          "lowManCount": 3
         },
         "Dues": {
           "total": -225,
           "rank": 12,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Rich": {
           "total": 5,
           "rank": 4,
-          "lowManCount": 0
+          "lowManCount": 3
         },
         "Stern": {
           "total": -195,
           "rank": 11,
-          "lowManCount": 0
+          "lowManCount": 3
         },
         "Andrew": {
           "total": 55,
@@ -2778,7 +2778,7 @@ const LEAGUE_DATA = {
         "Yonk": {
           "total": -120,
           "rank": 8,
-          "lowManCount": 3
+          "lowManCount": 1
         }
       }
     },
@@ -3314,47 +3314,47 @@ const LEAGUE_DATA = {
         "Heath": {
           "total": -235,
           "rank": 10,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "JB": {
           "total": 65,
           "rank": 6,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Woock": {
           "total": 25,
           "rank": 7,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Rizzo": {
           "total": 165,
           "rank": 3,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Marty": {
           "total": 85,
           "rank": 5,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Dues": {
           "total": -315,
           "rank": 12,
-          "lowManCount": 0
+          "lowManCount": 3
         },
         "Rich": {
           "total": -245,
           "rank": 11,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Stern": {
           "total": 325,
           "rank": 1,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Andrew": {
           "total": -45,
           "rank": 8,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "CP": {
           "total": 115,
@@ -3364,7 +3364,7 @@ const LEAGUE_DATA = {
         "Yonk": {
           "total": -125,
           "rank": 9,
-          "lowManCount": 0
+          "lowManCount": 5
         }
       }
     },
@@ -3895,17 +3895,17 @@ const LEAGUE_DATA = {
         "Farber": {
           "total": -215,
           "rank": 10,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Heath": {
           "total": 15,
           "rank": 6,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "JB": {
           "total": -45,
           "rank": 7,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Woock": {
           "total": -45,
@@ -3915,7 +3915,7 @@ const LEAGUE_DATA = {
         "Rizzo": {
           "total": 95,
           "rank": 4,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Marty": {
           "total": 175,
@@ -3925,32 +3925,32 @@ const LEAGUE_DATA = {
         "Dues": {
           "total": -45,
           "rank": 9,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Rich": {
           "total": 65,
           "rank": 5,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Stern": {
           "total": 175,
           "rank": 3,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Andrew": {
           "total": -215,
           "rank": 11,
-          "lowManCount": 0
+          "lowManCount": 4
         },
         "CP": {
           "total": 315,
           "rank": 1,
-          "lowManCount": 1
+          "lowManCount": 0
         },
         "Yonk": {
           "total": -275,
           "rank": 12,
-          "lowManCount": 3
+          "lowManCount": 2
         }
       }
     },
@@ -4567,22 +4567,22 @@ const LEAGUE_DATA = {
         "CP": {
           "total": 345,
           "rank": 2,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Yonk": {
           "total": 45,
           "rank": 6,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Farber": {
           "total": 5,
           "rank": 7,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Heath": {
           "total": -355,
           "rank": 14,
-          "lowManCount": 0
+          "lowManCount": 5
         },
         "JB": {
           "total": 505,
@@ -4592,12 +4592,12 @@ const LEAGUE_DATA = {
         "Rizzo": {
           "total": -55,
           "rank": 9,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Marty": {
           "total": -85,
           "rank": 10,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Dues": {
           "total": 125,
@@ -4617,7 +4617,7 @@ const LEAGUE_DATA = {
         "Andrew": {
           "total": -275,
           "rank": 13,
-          "lowManCount": 0
+          "lowManCount": 4
         },
         "Pinkston": {
           "total": -195,
@@ -4627,12 +4627,12 @@ const LEAGUE_DATA = {
         "Jerome": {
           "total": 105,
           "rank": 5,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Jett": {
           "total": -235,
           "rank": 12,
-          "lowManCount": 0
+          "lowManCount": 1
         }
       }
     },
@@ -5240,22 +5240,22 @@ const LEAGUE_DATA = {
         "Yonk": {
           "total": -260,
           "rank": 12,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Farber": {
           "total": 20,
           "rank": 8,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Heath": {
           "total": 60,
           "rank": 6,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "JB": {
           "total": 90,
           "rank": 5,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Rizzo": {
           "total": 60,
@@ -5265,12 +5265,12 @@ const LEAGUE_DATA = {
         "Ben": {
           "total": -10,
           "rank": 9,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Dues": {
           "total": -250,
           "rank": 11,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Rich": {
           "total": 490,
@@ -5280,12 +5280,12 @@ const LEAGUE_DATA = {
         "Stern": {
           "total": -240,
           "rank": 10,
-          "lowManCount": 0
+          "lowManCount": 4
         },
         "Andrew": {
           "total": -380,
           "rank": 14,
-          "lowManCount": 0
+          "lowManCount": 2
         },
         "Pinkston": {
           "total": 250,
@@ -5300,7 +5300,7 @@ const LEAGUE_DATA = {
         "Jett": {
           "total": -320,
           "rank": 13,
-          "lowManCount": 0
+          "lowManCount": 2
         }
       }
     },
@@ -7981,7 +7981,7 @@ const LEAGUE_DATA = {
         "Lloyd": {
           "total": 15,
           "rank": 7,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Jett": {
           "total": 285,
@@ -8603,7 +8603,7 @@ const LEAGUE_DATA = {
         "CP": {
           "total": 165,
           "rank": 5,
-          "lowManCount": 0
+          "lowManCount": 1
         },
         "Yonk": {
           "total": 35,
@@ -9320,7 +9320,7 @@ const LEAGUE_DATA = {
         "Dues": {
           "total": -235,
           "rank": 12,
-          "lowManCount": 2
+          "lowManCount": 3
         },
         "Rich": {
           "total": 395,
@@ -10007,7 +10007,7 @@ const LEAGUE_DATA = {
         "Rich": {
           "total": -455,
           "rank": 13,
-          "lowManCount": 2
+          "lowManCount": 3
         },
         "Stern": {
           "total": 15,
@@ -10664,7 +10664,7 @@ const LEAGUE_DATA = {
         "Rick": {
           "total": -125,
           "rank": 8,
-          "lowManCount": 3
+          "lowManCount": 4
         },
         "JB": {
           "total": 135,
