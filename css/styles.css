@@ -457,7 +457,7 @@ table {
    a min-width so they overflow their .table-container and scroll instead. */
 #weeklyPoints,
 #weeklySidebets {
-  min-width: 1400px;
+  min-width: 1500px;
   /* Safari does not support position: sticky on table cells when the table
      uses border-collapse: collapse - the sticky column silently scrolls
      with everything else instead of freezing. Switching to separate model
@@ -480,6 +480,20 @@ table {
   z-index: 1;
   background-color: var(--bg-card);
   border-right: 1px solid var(--border-color);
+  width: 112px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* The default 20px side padding leaves these narrow fixed-layout columns
+   with less room than their header text + sort caret need, so the caret
+   spilled out past the cell edge. Tighter padding keeps it inside. */
+#weeklyPoints th,
+#weeklyPoints td,
+#weeklySidebets th,
+#weeklySidebets td {
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 #weeklyPoints tr:nth-child(even) td:first-child,
