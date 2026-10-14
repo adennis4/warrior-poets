@@ -485,6 +485,15 @@ table {
   padding-right: 12px;
 }
 
+/* .member-name sets display: flex, which stops the owner cell from being a
+   real table cell. Safari then wraps it in an anonymous cell and pins the
+   flex box only within that column-wide wrapper, so body cells never froze
+   on iPhone while the Owner header (a plain th) did. Keep them table cells. */
+#weeklyPoints td.member-name,
+#weeklySidebets td.member-name {
+  display: table-cell;
+}
+
 /* The default 20px side padding leaves these narrow fixed-layout columns
    with less room than their header text + sort caret need, so the caret
    spilled out past the cell edge. Tighter padding keeps it inside. */
