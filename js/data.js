@@ -10727,7 +10727,8 @@ const LEAGUE_DATA = {
           "4": 109.36,
           "5": 149.06,
           "6": 112.6,
-          "7": 83.24
+          "7": 83.24,
+          "8": 85.96
         },
         "Yonk": {
           "1": 107.7,
@@ -10736,7 +10737,8 @@ const LEAGUE_DATA = {
           "4": 52.92,
           "5": 89.86,
           "6": 62.46,
-          "7": 77.42
+          "7": 77.42,
+          "8": 56.96
         },
         "JB": {
           "1": 85.4,
@@ -10745,7 +10747,8 @@ const LEAGUE_DATA = {
           "4": 60.58,
           "5": 92.92,
           "6": 79.18,
-          "7": 76.3
+          "7": 76.3,
+          "8": 86.78
         },
         "Rizzo": {
           "1": 76.24,
@@ -10754,7 +10757,8 @@ const LEAGUE_DATA = {
           "4": 101.98,
           "5": 119.64,
           "6": 96.14,
-          "7": 113.16
+          "7": 113.16,
+          "8": 93.52
         },
         "Ben": {
           "1": 117.82,
@@ -10763,7 +10767,8 @@ const LEAGUE_DATA = {
           "4": 108.02,
           "5": 70.36,
           "6": 82.08,
-          "7": 124.38
+          "7": 124.28,
+          "8": 98.92
         },
         "Dues": {
           "1": 50.46,
@@ -10772,7 +10777,8 @@ const LEAGUE_DATA = {
           "4": 102.42,
           "5": 77.9,
           "6": 63.08,
-          "7": 107.68
+          "7": 107.68,
+          "8": 130.18
         },
         "Farber": {
           "1": 85.56,
@@ -10781,7 +10787,8 @@ const LEAGUE_DATA = {
           "4": 90.02,
           "5": 96.6,
           "6": 113.3,
-          "7": 110.22
+          "7": 110.22,
+          "8": 120.96
         },
         "Rick": {
           "1": 96.76,
@@ -10790,7 +10797,8 @@ const LEAGUE_DATA = {
           "4": 73.42,
           "5": 82.66,
           "6": 81.5,
-          "7": 103.18
+          "7": 103.18,
+          "8": 66.78
         },
         "Stern": {
           "1": 102.0,
@@ -10799,7 +10807,8 @@ const LEAGUE_DATA = {
           "4": 98.6,
           "5": 97.84,
           "6": 84.92,
-          "7": 88.28
+          "7": 88.28,
+          "8": 85.2
         },
         "Lloyd": {
           "1": 101.16,
@@ -10808,7 +10817,8 @@ const LEAGUE_DATA = {
           "4": 128.7,
           "5": 120.9,
           "6": 79.38,
-          "7": 45.9
+          "7": 45.9,
+          "8": 75.24
         },
         "Jett": {
           "1": 111.5,
@@ -10817,7 +10827,8 @@ const LEAGUE_DATA = {
           "4": 56.28,
           "5": 81.64,
           "6": 62.74,
-          "7": 84.18
+          "7": 84.18,
+          "8": 114.5
         },
         "Pinkston": {
           "1": 86.0,
@@ -10826,7 +10837,8 @@ const LEAGUE_DATA = {
           "4": 87.0,
           "5": 118.72,
           "6": 86.72,
-          "7": 74.4
+          "7": 74.4,
+          "8": 78.68
         },
         "Andrew": {
           "1": 86.96,
@@ -10835,7 +10847,8 @@ const LEAGUE_DATA = {
           "4": 112.34,
           "5": 55.44,
           "6": 73.66,
-          "7": 119.42
+          "7": 119.42,
+          "8": 105.1
         },
         "Rich": {
           "1": 114.56,
@@ -10844,7 +10857,8 @@ const LEAGUE_DATA = {
           "4": 109.88,
           "5": 92.14,
           "6": 57.0,
-          "7": 88.52
+          "7": 88.52,
+          "8": 65.08
         }
       },
       "weeklySidebets": {
@@ -10855,7 +10869,8 @@ const LEAGUE_DATA = {
           "4": 35,
           "5": 65,
           "6": 55,
-          "7": -25
+          "7": -25,
+          "8": -5
         },
         "Ben": {
           "1": 55,
@@ -10864,7 +10879,8 @@ const LEAGUE_DATA = {
           "4": 25,
           "5": -55,
           "6": 15,
-          "7": 65
+          "7": 65,
+          "8": 25
         },
         "Rich": {
           "1": 45,
@@ -10873,7 +10889,8 @@ const LEAGUE_DATA = {
           "4": 45,
           "5": -5,
           "6": -65,
-          "7": 5
+          "7": 5,
+          "8": -55
         },
         "Jett": {
           "1": 35,
@@ -10882,7 +10899,8 @@ const LEAGUE_DATA = {
           "4": -55,
           "5": -35,
           "6": -45,
-          "7": -15
+          "7": -15,
+          "8": 45
         },
         "Yonk": {
           "1": 25,
@@ -10891,7 +10909,8 @@ const LEAGUE_DATA = {
           "4": -65,
           "5": -15,
           "6": -55,
-          "7": -35
+          "7": -35,
+          "8": -65
         },
         "Stern": {
           "1": 15,
@@ -10900,7 +10919,8 @@ const LEAGUE_DATA = {
           "4": -5,
           "5": 25,
           "6": 25,
-          "7": -5
+          "7": -5,
+          "8": -15
         },
         "Lloyd": {
           "1": 5,
@@ -10909,7 +10929,8 @@ const LEAGUE_DATA = {
           "4": 65,
           "5": 55,
           "6": -5,
-          "7": -65
+          "7": -65,
+          "8": -35
         },
         "Rick": {
           "1": -5,
@@ -10918,7 +10939,8 @@ const LEAGUE_DATA = {
           "4": -35,
           "5": -25,
           "6": 5,
-          "7": 15
+          "7": 15,
+          "8": -45
         },
         "Andrew": {
           "1": -15,
@@ -10927,7 +10949,8 @@ const LEAGUE_DATA = {
           "4": 55,
           "5": -65,
           "6": -25,
-          "7": 55
+          "7": 55,
+          "8": 35
         },
         "Pinkston": {
           "1": -25,
@@ -10936,7 +10959,8 @@ const LEAGUE_DATA = {
           "4": -25,
           "5": 35,
           "6": 35,
-          "7": -55
+          "7": -55,
+          "8": -25
         },
         "Farber": {
           "1": -35,
@@ -10945,7 +10969,8 @@ const LEAGUE_DATA = {
           "4": -15,
           "5": 15,
           "6": 65,
-          "7": 35
+          "7": 35,
+          "8": 55
         },
         "JB": {
           "1": -45,
@@ -10954,7 +10979,8 @@ const LEAGUE_DATA = {
           "4": -45,
           "5": 5,
           "6": -15,
-          "7": -45
+          "7": -45,
+          "8": 5
         },
         "Rizzo": {
           "1": -55,
@@ -10963,7 +10989,8 @@ const LEAGUE_DATA = {
           "4": 5,
           "5": 45,
           "6": 45,
-          "7": 45
+          "7": 45,
+          "8": 15
         },
         "Dues": {
           "1": -65,
@@ -10972,150 +10999,151 @@ const LEAGUE_DATA = {
           "4": 15,
           "5": -45,
           "6": -35,
-          "7": 25
+          "7": 25,
+          "8": 65
         }
       },
       "standings": {
         "CP": {
-          "totalPoints": 746.86,
+          "totalPoints": 832.82,
           "pointsRank": 1,
           "yearEndStanding": null
         },
         "Yonk": {
-          "totalPoints": 586.82,
-          "pointsRank": 11,
+          "totalPoints": 643.78,
+          "pointsRank": 14,
           "yearEndStanding": null
         },
         "Farber": {
-          "totalPoints": 679.18,
-          "pointsRank": 5,
+          "totalPoints": 800.14,
+          "pointsRank": 4,
           "yearEndStanding": null
         },
         "Rick": {
-          "totalPoints": 660.68,
+          "totalPoints": 727.46,
           "pointsRank": 6,
           "yearEndStanding": null
         },
         "JB": {
-          "totalPoints": 570.08,
-          "pointsRank": 12,
+          "totalPoints": 656.86,
+          "pointsRank": 13,
           "yearEndStanding": null
         },
         "Rizzo": {
-          "totalPoints": 689.6,
-          "pointsRank": 4,
+          "totalPoints": 783.12,
+          "pointsRank": 5,
           "yearEndStanding": null
         },
         "Ben": {
-          "totalPoints": 708.24,
+          "totalPoints": 807.06,
           "pointsRank": 3,
           "yearEndStanding": null
         },
         "Dues": {
-          "totalPoints": 561.6,
-          "pointsRank": 14,
+          "totalPoints": 691.78,
+          "pointsRank": 9,
           "yearEndStanding": null
         },
         "Rich": {
-          "totalPoints": 624.3,
-          "pointsRank": 8,
+          "totalPoints": 689.38,
+          "pointsRank": 10,
           "yearEndStanding": null
         },
         "Stern": {
-          "totalPoints": 725.54,
+          "totalPoints": 810.74,
           "pointsRank": 2,
           "yearEndStanding": null
         },
         "Andrew": {
-          "totalPoints": 586.86,
-          "pointsRank": 10,
+          "totalPoints": 691.96,
+          "pointsRank": 8,
           "yearEndStanding": null
         },
         "Pinkston": {
-          "totalPoints": 593.66,
-          "pointsRank": 9,
+          "totalPoints": 672.34,
+          "pointsRank": 12,
           "yearEndStanding": null
         },
         "Lloyd": {
-          "totalPoints": 641.86,
+          "totalPoints": 717.1,
           "pointsRank": 7,
           "yearEndStanding": null
         },
         "Jett": {
-          "totalPoints": 569.68,
-          "pointsRank": 13,
+          "totalPoints": 684.18,
+          "pointsRank": 11,
           "yearEndStanding": null
         }
       },
       "sidebetStandings": {
         "CP": {
-          "total": 135,
+          "total": 130,
           "rank": 3,
           "lowManCount": 0
         },
         "Yonk": {
-          "total": -95,
-          "rank": 9,
-          "lowManCount": 1
+          "total": -160,
+          "rank": 14,
+          "lowManCount": 2
         },
         "Farber": {
-          "total": 75,
-          "rank": 5,
+          "total": 130,
+          "rank": 4,
           "lowManCount": 0
         },
         "Rick": {
-          "total": 45,
+          "total": 0,
           "rank": 6,
           "lowManCount": 0
         },
         "JB": {
-          "total": -155,
-          "rank": 14,
+          "total": -150,
+          "rank": 13,
           "lowManCount": 0
         },
         "Rizzo": {
-          "total": 85,
-          "rank": 4,
+          "total": 100,
+          "rank": 5,
           "lowManCount": 0
         },
         "Ben": {
-          "total": 175,
+          "total": 200,
           "rank": 1,
           "lowManCount": 0
         },
         "Dues": {
-          "total": -145,
-          "rank": 13,
+          "total": -80,
+          "rank": 10,
           "lowManCount": 1
         },
         "Rich": {
-          "total": 5,
+          "total": -50,
           "rank": 8,
           "lowManCount": 2
         },
         "Stern": {
-          "total": 175,
+          "total": 160,
           "rank": 2,
           "lowManCount": 0
         },
         "Andrew": {
-          "total": -105,
-          "rank": 11,
+          "total": -70,
+          "rank": 9,
           "lowManCount": 2
         },
         "Pinkston": {
-          "total": -105,
-          "rank": 10,
+          "total": -130,
+          "rank": 12,
           "lowManCount": 0
         },
         "Lloyd": {
-          "total": 35,
+          "total": 0,
           "rank": 7,
           "lowManCount": 1
         },
         "Jett": {
-          "total": -125,
-          "rank": 12,
+          "total": -80,
+          "rank": 11,
           "lowManCount": 0
         }
       }
